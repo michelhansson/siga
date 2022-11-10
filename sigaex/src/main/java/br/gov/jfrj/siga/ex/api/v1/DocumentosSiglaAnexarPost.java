@@ -39,8 +39,8 @@ public class DocumentosSiglaAnexarPost implements IDocumentosSiglaAnexarPost {
 			throw new AplicacaoException("Arquivo vazio não pode ser anexado.");
 		}
 		numBytes = baArquivo.length;
-		if (numBytes > 10 * 1024 * 1024) {
-			throw new AplicacaoException("Não é permitida a anexação de arquivos com mais de 10MB.");
+		if (numBytes > 21 * 1024 * 1024) {
+			throw new AplicacaoException("Não é permitida a anexação de arquivos com mais de 20MB.");
 		}
 
 		ExMovimentacao mov = Ex.getInstance().getBL().anexarArquivo(ctx.getCadastrante(), ctx.getLotaCadastrante(), mob,

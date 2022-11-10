@@ -81,7 +81,7 @@ import br.gov.jfrj.siga.ex.model.enm.ExTipoDePrincipal;
 				+ "			where doc.anoEmissao = :anoEmissao"
 				+ "			and sub.sesbPessoa = :sesb"
 				+ "			and frm.idFormaDoc = :idFormaDoc"),
-		@NamedQuery(name = "obterProximoNumero", query = "select max(doc.numExpediente)+1"
+		@NamedQuery(name = "obterProximoNumero", query = "select max(doc.numExpediente)"
 				+ "			from ExDocumento doc"
 				+ "			inner join doc.exFormaDocumento frm"
 				+ "			inner join doc.orgaoUsuario org"
@@ -443,6 +443,9 @@ public abstract class AbstractExDocumento extends ExArquivo implements
 	@Column(name = "TP_PRINCIPAL")
 	private ExTipoDePrincipal tipoDePrincipal;
 
+	@Column(name = "NM_TIPO_DESPACHO_DESCRICAO", length = 256)
+	private String tipoDespachoDescricao;
+	
 	/**
 	 * Simple constructor of AbstractExDocumento instances.
 	 */
@@ -1194,4 +1197,11 @@ public abstract class AbstractExDocumento extends ExArquivo implements
 		this.tipoDePrincipal = tipoDePrincipal;
 	}
 	
+	public String getTipoDespachoDescricao() {
+		return tipoDespachoDescricao;
+	}
+
+	public void setTipoDespachoDescricao(String tipoDespachoDescricao) {
+		this.tipoDespachoDescricao = tipoDespachoDescricao;
+	}
 }

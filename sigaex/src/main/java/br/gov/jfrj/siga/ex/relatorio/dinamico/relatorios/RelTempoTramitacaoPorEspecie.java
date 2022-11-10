@@ -90,7 +90,7 @@ import net.sf.jasperreports.engine.JRException;
 			Query qryLotacaoTitular = ContextoPersistencia.em().createQuery(
 					"from DpLotacao lot " + "where lot.dataFimLotacao is null "
 							+ "and lot.orgaoUsuario = "
-							+ parametros.get("orgao")
+							+ parametros.get("orgaoUsuario")
 							+ " and lot.siglaLotacao = '"
 							+ parametros.get("lotacaoTitular") + "'");
 			DpLotacao lotaTitular = (DpLotacao) qryLotacaoTitular.getSingleResult();

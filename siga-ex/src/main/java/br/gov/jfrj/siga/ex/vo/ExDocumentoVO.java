@@ -110,6 +110,7 @@ public class ExDocumentoVO extends ExVO {
 	String outrosMobsLabel;
 	String nomeCompleto;
 	String dtDocDDMMYY;
+	String dtDocDDMMYYYY;
 	String dataPrimeiraAssinatura;
 	String subscritorString;
 	String subscritorSigla;
@@ -179,6 +180,7 @@ public class ExDocumentoVO extends ExVO {
 
 		this.nomeCompleto = doc.getNomeCompleto();
 		this.dtDocDDMMYY = doc.getDtDocDDMMYY();
+		this.dtDocDDMMYYYY = doc.getDtDocDDMMYYYY();
 		
 		/*
 		 * 16/01/2020 - Data da ultima assinatura
@@ -1053,6 +1055,10 @@ public class ExDocumentoVO extends ExVO {
 
 	public void setPrincipalCompacto(String principalCompacto) {
 		this.principalCompacto = principalCompacto;
+	}
+
+	public String getDtDocDDMMYYYY() {
+		return dtDocDDMMYYYY;
 	}
 
 }

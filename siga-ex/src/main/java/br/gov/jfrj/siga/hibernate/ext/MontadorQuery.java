@@ -96,8 +96,10 @@ public class MontadorQuery implements IMontadorQuery {
 			sbf.append(" and doc.exClassificacao.hisIdIni = :classificacaoSelId");
 		}
 
-		if (flt.getDescrDocumento() != null && !flt.getDescrDocumento().trim().equals("") && flt.getListaIdDoc() == null) {
-			sbf.append(" and doc.descrDocumentoAI like :descrDocumento");
+		if (flt.getDescrDocumento() != null
+				&& !flt.getDescrDocumento().trim().equals("")) {
+			sbf.append(" and remove_acento(nvl(doc.descrDocumentoAI,doc.descrDocumento)) like '%' || :descrDocumento  || '%'");
+			//sbf.append(" and upper(doc.descrDocumentoAI) like upper('%' || :descrDocumento  || '%')");
 		}
 
 		// if (flt.getFullText() != null &&

@@ -690,6 +690,27 @@ public class ExDocumento extends AbstractExDocumento implements Serializable,
 		return "";
 	}
 
+    public String getDtFinalizacaoDDMMMMYYYY() {
+		if (getDtFinalizacao() != null) {
+			Locale.setDefault (new Locale ("pt", "BR"));
+			final SimpleDateFormat df = new SimpleDateFormat("dd' de 'MMMM' de 'yyyy");
+			return df.format(getDtFinalizacao());
+		}
+		return "";
+	}
+	
+	/**
+	 * Retorna a data de finalização do documento no formato dd/mm/aaaa, por
+	 * exemplo, 01/02/2010.
+	 */
+	public String getDtFinalizacaoDDMMYYYY() {
+
+		if (isFinalizado()) {
+			final SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+			return df.format(getDtFinalizacao());
+		}
+		return "";
+	}
 	
 	
 	
@@ -805,6 +826,18 @@ public class ExDocumento extends AbstractExDocumento implements Serializable,
 	}
 
 	/**
+	 * Retorna a data de registro do documento no formato dd/mm/aaaa, por exemplo,
+	 * 01/02/2010.
+	 */
+	public String getDtRegDocDDMMYYYY() {
+		if (getDtRegDoc() != null) {
+			final SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+			return df.format(getDtRegDoc());
+		}
+		return "";
+	}
+
+	/**
 	 * Retorna a data de disponibilização da última movimentação do móbil geral,
 	 * no formato dd/MM/yy.<b> Obs.: não corresponde exatamente ao nome do
 	 * método.</b>
@@ -842,6 +875,20 @@ public class ExDocumento extends AbstractExDocumento implements Serializable,
 		if (getDtRegDoc() != null) {
 			final SimpleDateFormat df = new SimpleDateFormat(
 					"dd/MM/yy HH:mm:ss");
+			return df.format(getDtRegDoc());
+		}
+		return "";
+	}
+
+	/**
+	 * Retorna a data de registro do documento no formato dd/mm/aaaa HH:mm:ss, por
+	 * exemplo, 01/02/2010 16:10:00.
+	 * 
+	 */
+	public String getDtRegDocDDMMYYYYHHMMSS() {
+		if (getDtRegDoc() != null) {
+			final SimpleDateFormat df = new SimpleDateFormat(
+					"dd/MM/yyyy HH:mm:ss");
 			return df.format(getDtRegDoc());
 		}
 		return "";
@@ -2005,9 +2052,11 @@ public class ExDocumento extends AbstractExDocumento implements Serializable,
 			assinantesToken = removeAssinadosPor(getAssinaturasComToken());
 			assinantesSenha = removeAssinadosPor(getAssinaturasComSenha());
 		}
+
+		final String TEXTO_DESCRITIVO_ASSINATURA = ", conforme previsto na Lei 11.419/2006 e regulamentada pela Portaria 2067/2020-GP.\n";
 		
 		if (assinantesToken.length() > 0)
-			retorno = "Assinado digitalmente por " + assinantesToken + ".\n";
+			retorno = "Assinado digitalmente por " + assinantesToken + TEXTO_DESCRITIVO_ASSINATURA;
 
 		if (assinantesPor.length() > 0) {
 			retorno = retorno + assinantesPor +".\n" ;
@@ -2019,7 +2068,7 @@ public class ExDocumento extends AbstractExDocumento implements Serializable,
 
 		if (conferentes.length() > 0)
 			retorno += conferentes.length() > 0 ? "Autenticado digitalmente por "
-					+ conferentes + ".\n"
+					+ conferentes + TEXTO_DESCRITIVO_ASSINATURA
 					: "";
 
 		if (conferentesSenha.length() > 0)

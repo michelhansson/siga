@@ -19,7 +19,7 @@ function sbmt() {
 <input type="hidden" name="secaoUsuario" id="secaoUsuario" value="${lotaTitular.orgaoUsuario.descricaoMaiusculas}" />
 <input type="hidden" name="campos" value="idTpDoc" />
 <div class="row">
-	<div class="col-sm-2">
+	<div class="col-sm-2" style="display: none;">
 		<label>Origem</label>
 		<select name="origem" class="form-control">
 			<c:forEach items="${listaExTipoDocumento}" var="item">

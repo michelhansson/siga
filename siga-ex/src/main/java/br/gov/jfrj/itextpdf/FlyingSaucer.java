@@ -43,6 +43,7 @@ import com.crivano.swaggerservlet.SwaggerUtils;
 import com.openhtmltopdf.extend.FSStream;
 import com.openhtmltopdf.extend.FSStreamFactory;
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
+import com.openhtmltopdf.util.XRLog;
 
 import br.gov.jfrj.siga.base.Prop;
 import br.gov.jfrj.siga.base.SigaHTTP;
@@ -148,6 +149,8 @@ public class FlyingSaucer implements ConversorHtml {
 		org.w3c.dom.Document dom = new W3CDom().fromJsoup(jsoupDoc);
 		
 		try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
+			XRLog.listRegisteredLoggers().forEach(logger -> XRLog.setLevel(logger, java.util.logging.Level.OFF));
+			
 			logger.fine("comecei a gerar o pdf");
 			PdfRendererBuilder builder = new PdfRendererBuilder();
 			builder.useHttpStreamImplementation(new DownloadExterno());

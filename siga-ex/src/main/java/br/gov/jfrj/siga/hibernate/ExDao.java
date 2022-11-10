@@ -57,16 +57,19 @@ import org.jboss.logging.Logger;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.Prop;
 import br.gov.jfrj.siga.base.util.Texto;
+import br.gov.jfrj.siga.cp.CpIdentidade;
 import br.gov.jfrj.siga.cp.model.enm.CpMarcadorEnum;
 import br.gov.jfrj.siga.cp.model.enm.CpMarcadorFinalidadeEnum;
 import br.gov.jfrj.siga.cp.model.enm.CpMarcadorGrupoEnum;
 import br.gov.jfrj.siga.cp.model.enm.ITipoDeConfiguracao;
+import br.gov.jfrj.siga.cp.model.enm.ITipoDeMovimentacao;
 import br.gov.jfrj.siga.dp.CpMarcador;
 import br.gov.jfrj.siga.dp.CpOrgaoUsuario;
 import br.gov.jfrj.siga.dp.DpLotacao;
 import br.gov.jfrj.siga.dp.DpPessoa;
 import br.gov.jfrj.siga.dp.dao.CpDao;
 import br.gov.jfrj.siga.ex.AbstractExMovimentacao;
+import br.gov.jfrj.siga.ex.ExAcessoDocumento;
 import br.gov.jfrj.siga.ex.ExClassificacao;
 import br.gov.jfrj.siga.ex.ExConfiguracao;
 import br.gov.jfrj.siga.ex.ExDocumento;
@@ -461,7 +464,7 @@ public class ExDao extends CpDao {
 		 * retirado o I, l, 1, 0 e O pois causa confusão na hora do usuário digitar
 		 */
 		public static String randomAlfanumerico(int contador) {
-			final String STRING_ALFANUMERICA = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
+			final String STRING_ALFANUMERICA = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 			StringBuilder sb = new StringBuilder();
 			while (contador-- != 0) {	
 				int caracteres = (int)(Math.random()*STRING_ALFANUMERICA.length());	
@@ -1440,6 +1443,19 @@ public class ExDao extends CpDao {
 		return l.get(0);
 	}	
 
+	public ExFormaDocumento consultarPorSiglaForma(String sigla) {
+		final Query query = em().createNamedQuery("consultarSiglaForma");
+		query.setParameter("sigla", sigla);
+
+		query.setHint("org.hibernate.cacheable", true);
+		query.setHint("org.hibernate.cacheRegion", "query.ExFormaDocumento");
+
+		final List<ExFormaDocumento> l = query.getResultList();
+		if (l.size() != 1)
+			return null;
+		return l.get(0);
+	}	
+
 	public int obterProximoNumeroVolume(ExDocumento doc) {
 		return doc.getNumUltimoVolume() + 1;
 	}
@@ -2343,6 +2359,130 @@ public class ExDao extends CpDao {
 		query.setParameter("siglas", siglas);
 		
 		return query.getResultList();
+	}
+
+	public ExDocumento recuperarDocumentoConsultaPublica(String siglaFormaDocumento, String anoEmissao, String numeroExpediente) {
+		final Query query = em().createNamedQuery("consultaPublica");
+		
+		query.setParameter("siglaFormaDoc", siglaFormaDocumento);
+		query.setParameter("anoEmissao", anoEmissao);
+		query.setParameter("numExpediente", numeroExpediente);
+
+		final List<ExDocumento> l = query.getResultList();
+		if (l.size() != 1)
+			return null;
+
+		return l.get(0);
+	}
+
+	public List<ExMovimentacao> recuperarMovimentacaoConsultaPublica(Long idDoc) {
+		List<ITipoDeMovimentacao> movimentosParaIgnorar = Arrays
+				.asList(new ITipoDeMovimentacao[] { ExTipoDeMovimentacao.ASSINATURA_DIGITAL_DOCUMENTO,
+						ExTipoDeMovimentacao.CANCELAMENTO_DE_MOVIMENTACAO,
+						ExTipoDeMovimentacao.ASSINATURA_DIGITAL_MOVIMENTACAO });
+		
+		final Query query = em().createNamedQuery("consultarMovimentacaoConsultaPublica");
+
+		query.setParameter("idDoc", idDoc);
+		query.setParameter("tipoMovimentacao", movimentosParaIgnorar);
+
+		return query.getResultList();
+	}
+
+	public ExMovimentacao recuperarMovimentacaoPorId(Long idMov) {
+		final Query query = em().createNamedQuery("consultarMovimentacaoPorId");
+
+		query.setParameter("idMov", idMov);
+
+		final List<ExMovimentacao> l = query.getResultList();
+		if (l.size() != 1)
+			return null;
+
+		return l.get(0);
+	}
+
+	public ExAcessoDocumento recuperarAcessoDocumento(final CpIdentidade identidade, final String dtAcesso) {
+		final Query query = em().createNamedQuery(
+				"consultarAcessoDocumento");
+		
+		query.setParameter("identidade", identidade);
+		query.setParameter("dtAcesso", dtAcesso);
+		query.setFirstResult(1);
+		query.setMaxResults(1);
+		List<ExAcessoDocumento> result = query.getResultList();
+		if (result == null || result.size() == 0)
+			return null;
+		return result.get(0);
+	}
+
+	
+	public void logAcessoDocumento(String nmUsuario, String sigla, String tipoDocumento, String mensagem, Date dtAcesso, String auditIP, final ExDocumento exDocumento) {
+		try {
+			CpIdentidade cpIdentidade = consultaIdentidadeCadastrante(nmUsuario, true);
+			ExAcessoDocumento exAcessoDocumento = new ExAcessoDocumento();
+			exAcessoDocumento.setCpIdentidade(cpIdentidade);
+			exAcessoDocumento.setSigla(sigla);
+			exAcessoDocumento.setTipoDocumento(tipoDocumento);
+			exAcessoDocumento.setMensagem(mensagem);
+			exAcessoDocumento.setDtAcesso(dtAcesso);
+			exAcessoDocumento.setAuditIP(auditIP);
+			exAcessoDocumento.setExDocumento(exDocumento);
+			ExDao.getInstance().gravar(exAcessoDocumento);
+			
+			//ContextoPersistencia.flushTransaction();
+		} catch (final AplicacaoException e) {
+			throw e;
+		} catch (final Exception e) {
+			throw new AplicacaoException("Ocorreu um Erro durante a Operação",
+					0, e);
+		}
+	}
+	
+	public String usuarioEmissorDocumento(DpPessoa usuarioCadastrante) {
+		String msg = null;
+		
+		if (usuarioCadastrante != null) {
+			final Date dtAcesso = ExDao.getInstance().consultarDataEHoraDoServidor();
+			
+			String dataHora = new SimpleDateFormat("dd/MM/yyyy HH:mm").format(dtAcesso);
+			msg = "\nDocumento gerado por " + usuarioCadastrante.getNomePessoa() + " *Data e hora: " + dataHora;  
+
+			if (msg != null && !"".equals(msg)) {
+				
+			}
+		}
+		return msg;
+	}
+
+
+	public void salvarAcessoDocumento(DpPessoa usuarioCadastrante, CpIdentidade identidadeCadastrante, String ipAdress, String msg, String sigla, String tipoDocumento, Date dtAcesso, final ExDocumento exDocumento) {
+		if (!sigla.contains("TMP")) {
+			String dataHora = new SimpleDateFormat("dd/MM/yyyy HH:mm").format(dtAcesso);
+			ExAcessoDocumento exAcessoDocumento = ExDao.getInstance().recuperarAcessoDocumento(identidadeCadastrante, dataHora);
+			if (exAcessoDocumento == null) {
+				ExDao.getInstance().logAcessoDocumento(identidadeCadastrante.getNmLoginIdentidade(),
+						sigla, tipoDocumento, msg, dtAcesso, ipAdress, exDocumento);
+			}
+		}
+
+	}
+
+	public long consultaTamanhoVolume(final long idDoc, final long mobilNumSeq) throws SQLException {
+		long tamanho = 0;
+		/*
+		 * String sql =
+		 * " select sum(nvl(length(m.conteudo_blob_mov), 0)) from ex_documento d "
+		 * +" left join ex_mobil mob on (mob.id_doc = d.id_doc) "
+		 * +" join ex_tipo_mobil tm on (tm.id_tipo_mobil = mob.id_tipo_mobil) "
+		 * +" left join ex_movimentacao m on (m.id_mobil = mob.id_mobil) "
+		 * +" where d.id_doc = ? and tm.id_tipo_mobil = 4 and mob.num_sequencia = ? ";
+		 * Connection conn = null; PreparedStatement ps = null; ResultSet rset = null;
+		 * try { conn = getSessao().connection(); ps = conn.prepareStatement(sql);
+		 * ps.setLong(1, idDoc); ps.setLong(2, mobilNumSeq); rset = ps.executeQuery();
+		 * if (rset.next()) tamanho = rset.getLong(1); } finally { try { rset.close(); }
+		 * catch (Exception e) { ignored } try { ps.close(); } catch (Exception e) {
+		 * ignored } try { conn.close(); } catch (Exception e) { ignored } }
+		 */ return tamanho;
 	}
 	
 }

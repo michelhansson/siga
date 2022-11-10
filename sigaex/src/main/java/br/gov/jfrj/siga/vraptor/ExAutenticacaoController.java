@@ -15,6 +15,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.auth0.jwt.JWTSigner;
 import com.auth0.jwt.JWTVerifier;
 import com.lowagie.text.pdf.codec.Base64;
@@ -32,6 +34,7 @@ import br.com.caelum.vraptor.observer.download.InputStreamDownload;
 import br.gov.jfrj.siga.Service;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.Prop;
+import br.gov.jfrj.siga.base.util.GoogleRecaptcha;
 import br.gov.jfrj.siga.bluc.service.BlucService;
 import br.gov.jfrj.siga.bluc.service.HashRequest;
 import br.gov.jfrj.siga.bluc.service.HashResponse;
@@ -161,7 +164,7 @@ public class ExAutenticacaoController extends ExController {
 								dt,
 								assinatura,
 								certificado,
-								ExTipoDeMovimentacao.ASSINATURA_DIGITAL_MOVIMENTACAO);
+								ExTipoDeMovimentacao.ASSINATURA_DIGITAL_MOVIMENTACAO, StringUtils.EMPTY, StringUtils.EMPTY, false);
 			} catch (final Exception e) {
 				throw new AplicacaoException(e.getMessage());
 			}

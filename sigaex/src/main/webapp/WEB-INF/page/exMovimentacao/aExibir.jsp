@@ -283,9 +283,11 @@
 							<input type="hidden" name="ad_url_pdf_0"
 								value="/sigaex/app/arquivo/exibir?arquivo=${mov.nmPdf}" /> <input
 								type="hidden" name="ad_url_post_0"
-								value="/sigaex/app/expediente/mov/assinar_mov_gravar" /> <input
+								value="/sigaex/app/expediente/mov/assinar_mov_gravar" />  <!-- <input
 								type="hidden" name="ad_url_post_password_0"
-								value="/sigaex/app/expediente/mov/assinar_mov_login_senha_gravar" />
+								value="/sigaex/app/expediente/mov/assinar_mov_login_senha_gravar" />  --> <input
+								type="hidden" name="ad_url_post_password_0"
+								value="/sigaex/app/expediente/mov/assinar_mov_tjpa_gravar" />
 		
 							<input type="hidden" name="ad_id_0"
 								value="${fn:replace(mov.referencia, ':', '_')}" /> <input

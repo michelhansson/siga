@@ -6,6 +6,7 @@ import static br.gov.jfrj.siga.ex.ExMobil.removerIndicativoDeMovimentacaoComOrig
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
@@ -69,6 +70,7 @@ import br.gov.jfrj.siga.base.SigaModal;
 import br.gov.jfrj.siga.base.TipoResponsavelEnum;
 import br.gov.jfrj.siga.base.util.Texto;
 import br.gov.jfrj.siga.base.util.Utils;
+import br.gov.jfrj.siga.bluc.service.BlucService;
 import br.gov.jfrj.siga.cp.CpGrupoDeEmail;
 import br.gov.jfrj.siga.cp.CpToken;
 import br.gov.jfrj.siga.cp.bl.Cp;
@@ -174,6 +176,7 @@ import br.gov.jfrj.siga.ex.vo.ExMobilVO;
 import br.gov.jfrj.siga.hibernate.ExDao;
 import br.gov.jfrj.siga.vraptor.builder.BuscaDocumentoBuilder;
 import br.gov.jfrj.siga.vraptor.builder.ExMovimentacaoBuilder;
+import br.jus.tjpa.util.AssinadorTJPA;
 
 @Controller
 public class ExMovimentacaoController extends ExController {
@@ -357,7 +360,7 @@ public class ExMovimentacaoController extends ExController {
 
 		//if (numBytes > 10 * 1024 * 1024 ) {
 		if (numBytes > Prop.getInt("pdf.tamanho.maximo") ) {
-			throw new AplicacaoException(String.format("O tamanho do arquivo %s é superior ao permitido (10MB).",arquivo.getFileName()));
+			throw new AplicacaoException(String.format("O tamanho do arquivo %s é superior ao permitido (20MB).",arquivo.getFileName()));
 		}
 	}
 	
@@ -1030,6 +1033,11 @@ public class ExMovimentacaoController extends ExController {
 		result.include("mov", mov);
 		result.include("itens", lista);
 		result.include("lotaTitular", mov.getLotaTitular());
+		result.include("destinatario",
+				mov.getExMobil().getDoc().getDestinatario() == null
+						? mov.getExMobil().getDoc().getLotaDestinatario().getDescricao()
+						: mov.getExMobil().getDoc().getDestinatario().getNomePessoa() + " - "
+								+ mov.getExMobil().getDoc().getLotaDestinatario().getDescricao());
 		result.include("popup", popup);
 	}
 	
@@ -1115,7 +1123,7 @@ public class ExMovimentacaoController extends ExController {
 				i.setLotaSubscritor(m.getLotaSubscritor());
 				i.setAtendente(m.getResp());
 				i.setLotaAtendente(m.getLotaResp());
-				i.setDtDDMMYY(m.getDtMovDDMMYY());
+				i.setDtDDMMYYYY(m.getDtMovDDMMYYYY());
 				al.add(i);
 			}
 		}
@@ -1133,9 +1141,14 @@ public class ExMovimentacaoController extends ExController {
 			result.include("campoDe", mov.getCadastrante().getLotacao()
 					.getDescricao());
 			result.include("campoPara", mov.getRespString());
-			result.include("campoData", mov.getDtRegMovDDMMYYHHMMSS());
+			result.include("campoData", mov.getDtRegMovDDMMYYYYHHMMSS());
 			result.include("cadastrante", mov.getCadastrante());
 			result.include("lotaTitular", mov.getLotaTitular());
+			result.include("destinatario",
+					mov.getExMobil().getDoc().getDestinatario() == null
+							? mov.getExMobil().getDoc().getLotaDestinatario().getDescricao()
+							: mov.getExMobil().getDoc().getDestinatario().getNomePessoa() + " - "
+									+ mov.getExMobil().getDoc().getLotaDestinatario().getDescricao());
 
 			/*result.use(Results.page()).forwardTo(
 					"/WEB-INF/page/exMovimentacao/aGerarProtocolo.jsp");*/
@@ -1393,7 +1406,7 @@ public class ExMovimentacaoController extends ExController {
 				.novaInstancia().setSigla(sigla);
 
 		final ExDocumento doc = buscarDocumento(documentoBuilder);
-		
+
 		String funcaoUnidadeCosignatario = funcaoCosignatario;
 		// Efetuar validação e concatenar o conteudo se for implantação GOVSP
 		if(SigaMessages.isSigaSP() && (funcaoCosignatario != null && !funcaoCosignatario.isEmpty()) && (unidadeCosignatario != null && !unidadeCosignatario.isEmpty())) {
@@ -2013,6 +2026,19 @@ public class ExMovimentacaoController extends ExController {
 		final ExMovimentacao mov = movimentacaoBuilder.construir(dao());
 
 		Ex.getInstance().getComp().afirmar("Destinatário não pode receber documentos", ExPodeReceberPorConfiguracao.class, mov.getResp(), mov.getLotaResp(), mov.mob());
+
+		/*TJPA
+		/*Verificar se a lotação de destino possui pessoas lotadas ou substitutos*/
+		if (mov.getLotaResp() != null && mov.getLotaResp().getDpPessoaLotadosSet() != null
+				&& mov.getLotaResp().getDpPessoaLotadosSet().isEmpty()
+				&& mov.getLotaResp().getIdInicial() != 17794 /* Grupo de Trabalho da COJRRAAL/SEPLAN */
+				&& CpDao.getInstance().consultarSubstitutosDaLotacao(mov.getLotaResp()).isEmpty()) {/* Ninguém substitui a lotação */
+			result.include(SigaModal.ALERTA, SigaModal.mensagem("Não existem usuários lotados nem substitutos na unidade informada."));
+			forwardToTransferir(sigla, tipoResponsavel, lotaResponsavelSel, responsavelSel, grupoSel, postback, dtMovString,
+					subscritorSel, substituicao, titularSel, nmFuncaoSubscritor, idTpDespacho, idResp, tiposDespacho,
+					descrMov, cpOrgaoSel, dtDevolucaoMovString, obsOrgao, protocolo, tipoTramite);
+			
+		}
 		
 		if((mov.getLotaResp() != null && mov.getLotaResp().getIsSuspensa() != null && mov.getLotaResp().getIsSuspensa().equals(1)) 
 				|| (mov.getResp() != null && mov.getResp().getLotacao().getIsSuspensa() != null && mov.getResp().getLotacao().getIsSuspensa().equals(1))) {
@@ -3184,7 +3210,7 @@ public class ExMovimentacaoController extends ExController {
 							.assinarDocumento(getCadastrante(),
 									getLotaTitular(), mob.doc(), dt,
 									assinatura, certificado, tpMovAssinatura, juntar, tramitar,
-									exibirNoProtocolo, getTitular()));
+									exibirNoProtocolo, getTitular(), StringUtils.EMPTY, StringUtils.EMPTY, false));
 			
 		} catch (final Exception e) {
 			httpError(e);
@@ -3206,20 +3232,73 @@ public class ExMovimentacaoController extends ExController {
 				.novaInstancia().setMob(mob);
 		final ExMovimentacao mov = movimentacaoBuilder.construir(dao());
 		
+		//TJPA
+		throw new RuntimeException("ASSINATURA COM SENHA NÃO PERMITIDA");
+
+		
+		
+		/*
+		 * final BuscaDocumentoBuilder builder = BuscaDocumentoBuilder
+		 * .novaInstancia().setSigla(sigla); ExDocumento doc = buscarDocumento(builder,
+		 * true); final ExMobil mob = builder.getMob(); final ExMovimentacaoBuilder
+		 * movimentacaoBuilder = ExMovimentacaoBuilder .novaInstancia().setMob(mob);
+		 * final ExMovimentacao mov = movimentacaoBuilder.construir(dao());
+		 * 
+		 * try { Ex.getInstance() .getBL() .assinarDocumentoComSenha(getCadastrante(),
+		 * getLotaTitular(), doc, mov.getDtMov(), nomeUsuarioSubscritor,
+		 * senhaUsuarioSubscritor, senhaIsPin, true, getTitular(), copia, juntar,
+		 * tramitar, exibirNoProtocolo); } catch (final Exception e) { httpError(e); }
+		 * 
+		 * httpOK();
+		 */	}
+
+	@Transacional
+	@Post("/app/expediente/mov/assinar_tjpa_gravar")
+	public void aAssinarTjpaGravar(String sigla, final Boolean copia, final Boolean juntar,
+							       final Boolean tramitar, final Boolean exibirNoProtocolo, String nomeUsuarioSubscritor,
+							       String senhaUsuarioSubscritor) throws Exception {
 		try {
-			Ex.getInstance()
-					.getBL()
-					.assinarDocumentoComSenha(getCadastrante(),
-							getLotaTitular(), doc, mov.getDtMov(),
-							nomeUsuarioSubscritor, senhaUsuarioSubscritor, senhaIsPin, true,
-							getTitular(), copia, juntar, tramitar, exibirNoProtocolo);
+			final BuscaDocumentoBuilder builder = BuscaDocumentoBuilder.novaInstancia().setSigla(sigla);
+			buscarDocumento(builder, true);
+			final ExMobil mob = builder.getMob();
+			final ExMovimentacaoBuilder movimentacaoBuilder = ExMovimentacaoBuilder.novaInstancia().setMob(mob);
+			final ExMovimentacao mov = movimentacaoBuilder.construir(dao());
+			
+			final byte[] data = mob.doc().getConteudoBlobPdf();
+			String conteudoB64 = BlucService.bytearray2b64(data);
+			
+			//byte[] assinatura = AssinadorTJPA.getInstancia().assinaComCertificadoTJPA(conteudoB64);
+			//byte[] certificado = AssinadorTJPA.getInstancia().getCertificado().getEncoded();
+			
+			byte[] assinatura = AssinadorTJPA.getInstancia().assinarParaPKCS7(conteudoB64);
+			byte[] certificado = null;
+			
+			Date dt = dao().consultarDataEHoraDoServidor();
+
+			ITipoDeMovimentacao tpMovAssinatura = ExTipoDeMovimentacao.ASSINATURA_DIGITAL_DOCUMENTO;
+
+			if (copia) {
+				tpMovAssinatura = ExTipoDeMovimentacao.CONFERENCIA_COPIA_DOCUMENTO;
+			}
+
+			result.include(
+					"msg",
+					Ex.getInstance()
+							.getBL()
+							.assinarDocumento(getCadastrante(),
+									getLotaTitular(), mob.doc(), dt,
+									assinatura, certificado,
+									tpMovAssinatura, juntar, tramitar, exibirNoProtocolo, getTitular(),
+									nomeUsuarioSubscritor, senhaUsuarioSubscritor, true)); // TJPA
+
 		} catch (final Exception e) {
 			httpError(e);
+			return;
 		}
-		
+
 		httpOK();
 	}
-
+	
 	@Transacional
 	@Get
 	@Post
@@ -4886,7 +4965,7 @@ public class ExMovimentacaoController extends ExController {
 			Ex.getInstance()
 					.getBL()
 					.assinarMovimentacao(getCadastrante(), getLotaTitular(),
-							mov, dt, assinatura, certificado, tpMovAssinatura);
+							mov, dt, assinatura, certificado, tpMovAssinatura, StringUtils.EMPTY, StringUtils.EMPTY, false);
 		} catch (final Exception e) {
 			httpError(e);
 		}
@@ -4894,6 +4973,52 @@ public class ExMovimentacaoController extends ExController {
 		httpOK();
 	}
 
+	@Transacional
+	@Get
+	@Post
+	@Path("/app/expediente/mov/assinar_mov_tjpa_gravar")
+	public void aAssinarMovTjpaGravar(Long id, String sigla,
+			String tipoAssinaturaMov, String nomeUsuarioSubscritor,
+			String senhaUsuarioSubscritor, Boolean copia) throws Exception {
+
+		ITipoDeMovimentacao tpMovAssinatura = ExTipoDeMovimentacao.ASSINATURA_MOVIMENTACAO_COM_SENHA;
+		
+		try {
+
+		final BuscaDocumentoBuilder builder = BuscaDocumentoBuilder
+				.novaInstancia().setId(id);
+		buscarDocumento(builder, true);
+		final ExMobil mob = builder.getMob();
+
+		final ExMovimentacao mov = dao().consultar(id, ExMovimentacao.class,
+				false);
+		
+		final byte[] data = mob.doc().getConteudoBlobPdf();
+		String conteudoB64 = BlucService.bytearray2b64(data);
+		
+		//byte[] assinatura = AssinadorTJPA.getInstancia().assinaComCertificadoTJPA(conteudoB64);
+		//byte[] certificado = AssinadorTJPA.getInstancia().getCertificado().getEncoded();
+		
+		byte[] assinatura = AssinadorTJPA.getInstancia().assinarParaPKCS7(conteudoB64);
+		byte[] certificado = null;
+
+		if (copia
+				|| (tipoAssinaturaMov != null && tipoAssinaturaMov.equals("C")))
+			tpMovAssinatura = ExTipoDeMovimentacao.CONFERENCIA_COPIA_COM_SENHA;
+
+		Ex.getInstance()
+				.getBL()
+				.assinarMovimentacao(getCadastrante(), getLotaCadastrante(),
+						mov, mov.getDtMov(), assinatura, certificado,
+						tpMovAssinatura, nomeUsuarioSubscritor, senhaUsuarioSubscritor, true); // TJPA
+		} catch (final Exception e) {
+			httpError(e);
+			return;
+		}
+
+		httpOK();
+	}
+	
 	protected void httpOK() {
 		result.use(Results.http()).body("OK").setStatusCode(200);
 	}
@@ -5203,4 +5328,62 @@ public class ExMovimentacaoController extends ExController {
 		ExDocumentoController.redirecionarParaExibir(result, sigla);
 	}
 
+	// Pertinente ao TjPa - Solicitação do Sr. Mario José Matos Tavares
+	@Get("/app/expediente/mov/atualizar_marcas_lote")
+	public void aAtualizaMarca() {
+		String documentos = null;
+		result.include("descrMov", documentos);
+	}
+
+	// Pertinente ao TjPa - Solicitação do Sr. Mario José Matos Tavares
+	@SuppressWarnings("unused")
+	@Transacional
+	@Post("/app/expediente/mov/atualizar_marcas_lote_gravar")
+	public void aMarcasLoteGravar(final Integer postback,final String descrMov) throws IOException{
+		assertAcesso("");
+		this.setPostback(postback);
+		
+		BuscaDocumentoBuilder builder = null;	
+		ExDocumento doc = null;
+		
+		final Pattern p1 = Pattern.compile("^(?<orgao>TJPA)-(?<especie>[A-Z]{3})-(?<ano>[0-9]{4})/(?<numero>[0-9]{1,6})$");
+		Matcher m1 = null;
+		
+		if ("".equals(descrMov) || descrMov == null) {
+			throw new AplicacaoException("Informe os documentos para atualizar.");
+		}
+		String[] listaDocumentos = descrMov.split("\\r\\n|\\n");
+		for(String sigla: listaDocumentos) {
+		    m1 = p1.matcher(sigla.trim().toUpperCase());
+		    if (!m1.find()) {
+			   throw new AplicacaoException("Formato inválido " + sigla);
+			}
+
+		    String orgao = m1.group("orgao");
+			String especie = m1.group("especie");
+			String ano = m1.group("ano");
+			String numero = m1.group("numero");
+
+			ExFormaDocumento exFormaDocumento = dao().consultarPorSiglaForma(especie);
+			if (exFormaDocumento == null) {
+				throw new AplicacaoException("O documento: " + sigla + ", está com o tipo de documento inválido (" + especie + ").");
+			}
+			
+		    //System.out.println(String.format("Documento: %s", sigla));
+
+			
+			  try { 
+			    builder = BuscaDocumentoBuilder.novaInstancia().setSigla(sigla); doc =
+			    buscarDocumento(builder, false);
+			  
+			    Ex.getInstance().getBL().atualizarMarcas(doc);
+			  
+			  } catch (Exception e) { throw new
+			      RuntimeException("Ocorreu um erro ao gravar as marcas", e); 
+			  }
+			 result.include("descrMov", "");
+		}
+		result.redirectTo("/app/expediente/mov/atualizar_marcas_lote");
+	}
+	
 }

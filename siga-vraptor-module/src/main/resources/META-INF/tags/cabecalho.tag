@@ -150,7 +150,10 @@ ${meta}
 		<c:set var="collapse_ArqAuxiliares" scope="request" value="not collapsible" />
 		<c:set var="hide_only_GOVSP" scope="request"> </c:set>
 		<c:set var="hide_only_TRF2" scope="request"> d-none </c:set>
-		<c:set var="uri_logo_siga_pequeno" value="${f:resource('/siga.base.url')}/siga/imagens/logo-siga-140x40.png" scope="request" />		
+		<!-- 
+		<c:set var="uri_logo_siga_pequeno" value="${f:resource('/siga.base.url')}/siga/imagens/logo-siga-140x40.png" scope="request" />
+		 -->		
+		<c:set var="uri_logo_siga_pequeno" value="/siga/imagens/logo-siga-140x40.png" scope="request" />		
 	</c:otherwise>
 </c:choose>
 
@@ -361,7 +364,7 @@ ${meta}
 							<span class="h-100">
 								<strong><span>${f:resource('/siga.cabecalho.titulo')}</span> </strong>
 								 <c:catch>
-										<c:if test="${not empty titular.orgaoUsuario.descricao}"><span style="white-space: nowrap;"> <i class="fa fa-angle-right"></i> ${titular.orgaoUsuario.descricao}</span></h6></c:if>
+										<c:if test="${not empty titular.orgaoUsuario.descricao}"><span style="white-space: nowrap;"> <i class="fa fa-angle-right"></i>${f:resource('/siga.titulo')}</span></h6></c:if>
 								 </c:catch>
 							</span>
 						</div>
@@ -408,7 +411,7 @@ ${meta}
 											<button class="btn btn-light btn-sm dropdown-toggle ml-1" type="button" id="dropdownLotaMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 										</c:if>
 					 						<strong>
-					 							<span style="white-space: nowrap;"><i class="fa fa-building"></i> ${cadastrante.lotacao.sigla}</span>
+					 							<span style="white-space: nowrap;"><i class="fa fa-building"></i> ${cadastrante.lotacao.siglaTJPA}</span>
 					 						</strong>
 										<c:if test="${cadastrante.lotacoes[1] != null}">
 											</button>
@@ -436,7 +439,7 @@ ${meta}
 										<button class="btn btn-secondary btn-sm" type="button" onclick="delSession();javascript:location.href='/siga/app/substituicao/finalizar'">Finalizar</button>
 									</c:when>
 									<c:when
-										test="${not empty lotaTitular && lotaTitular.idLotacao!=cadastrante.lotacao.idLotacao}">Substituindo: <strong title="${lotaTitular.sigla}">${f:maiusculasEMinusculas(lotaTitular.nomeLotacao)}</strong>
+										test="${not empty lotaTitular && lotaTitular.idLotacao!=cadastrante.lotacao.idLotacao}">Substituindo: <strong title="${lotaTitular.siglaTJPA}">${f:maiusculasEMinusculas(lotaTitular.nomeLotacao)}</strong>
 										<button class="btn btn-secondary btn-sm" type="button" onclick="delSession();javascript:location.href='/siga/app/substituicao/finalizar'">Finalizar</button>
 									</c:when>
 									<c:otherwise></c:otherwise>

@@ -26,7 +26,7 @@
 				<td width="100%"> 
 					<table width="100%" border="0" cellpadding="2">
 						<tr> 
-							<td width="100%" align="center"><img src="contextpath/imagens/brasao2.png" width="50" height="50"/></td>
+							<td width="100%" align="center"><img src="contextpath/imagens/brasao_tjpa.png" width="50" height="50"/></td>
 						</tr>
 						<tr>
 							<td width="100%" align="center" style="font-family:AvantGarde Bk BT, Arial;font-size:11pt;">${f:resource('modelos.cabecalho.titulo')}</td>
@@ -82,55 +82,57 @@
 		<br />
 		<br />
 		<div style="font-family:Arial;font-size:10pt;">
-		<table width="100%" border="0" cellpadding="12" cellspacing="12"
-			bgcolor="#FFFFFF">
-			<tr>
-				<td width="25%">Órgão Externo:</td>
-				<td width="75%">${doc.orgaoExterno.descricao}</td>
-			</tr>
-			<tr>
-				<td width="25%">Órgão Externo Obs.:</td>
-				<td width="75%">${doc.obsOrgao}</td>
-			</tr>
-			<tr>
-				<td>Data Original do Documento:</td>
-				<td>${doc.dtDocOriginalDDMMYYYY}</td>
-			</tr>
-			<tr>
-				<td>Número Original:</td>
-				<td>${doc.numExtDoc}</td>
-			</tr>
-			<c:if test="${not empty doc.numAntigoDoc}">
+			<table width="100%" border="0" cellpadding="12" cellspacing="12"
+				bgcolor="#FFFFFF">
 				<tr>
-					<td>Número no Sistema Antigo:</td>
-					<td>${doc.numAntigoDoc}</td>
+					<td>Número na Origem:</td>
+					<td>${doc.numExtDoc}</td>
 				</tr>
-			</c:if>
-			<tr>
-				<td>Data:</td>
-				<td>${doc.dtDocDDMMYY}</td>
-			</tr>
-			<tr>
-				<td>Subscritor:</td>
-				<td>${doc.nmSubscritorExt}</td>
-			</tr>
-			<tr>
-				<td>Descrição:</td>
-				<td>${doc.descrDocumento}</td>
-			</tr>
-			<tr>
-				<td></td>
-				<td></td>
-			</tr>
-			<tr>
-				<td>Cadastrante:</td>
-				<td>${doc.cadastrante.descricao}</td>
-			</tr>
-			<tr>
-				<td>Data do cadastro:</td>
-				<td>${doc.dtRegDocDDMMYYHHMMSS}</td>
-			</tr>
-		</table>
+				<tr>
+					<td>Data na Origem:</td>
+					<td>${doc.dtDocOriginalDDMMYYYY}</td>
+				</tr>
+				<c:if test="${not empty doc.numAntigoDoc}">
+					<tr>
+						<td>Número no Sistema Antigo:</td>
+						<td>${doc.numAntigoDoc}</td>
+					</tr>
+				</c:if>
+				<tr>
+					<td width="25%">Órgão Externo:</td>
+					<c:if test="${not empty doc.orgaoExterno.descricao}">
+						<td width="75%">${doc.orgaoExterno.descricao}</td>
+					</c:if>
+					<c:if test="${not empty doc.obsOrgao}">
+						<td width="75%">${doc.obsOrgao}</td>
+					</c:if>
+				</tr>
+	
+				<tr>
+					<td>Subscritor:</td>
+					<td>${doc.nmSubscritorExt}</td>
+				</tr>
+				<tr>
+					<td>Descrição:</td>
+					<td>${doc.descrDocumento}</td>
+				</tr>
+				<tr>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>Cadastrante:</td>
+					<td>${doc.cadastrante.descricao}</td>
+				</tr>
+				<tr>
+					<td>Data do cadastro:</td>
+					<td>${doc.dtRegDocDDMMYYHHMMSS}</td>
+				</tr>
+				<tr>
+					<td>Data do protocolo:</td>
+					<td>${doc.dtDocDDMMYYYY}</td>
+				</tr>
+			</table>
 		</div>
 
 		<!-- INICIO PRIMEIRO RODAPE

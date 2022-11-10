@@ -88,21 +88,19 @@
 								title="Pesquisar expedientes e processos administrativos">
 								Pesquisar</a>
 							</c:if>
-							
-							<a
-							class="btn btn-primary float-right btn-sm ml-2"
-							href="javascript: window.location.href='/sigaex/app/mesa'"
-							title="Exibir os documentos que estão na mesa virtual">
-							Mesa Virtual</a>
+							<c:if test="${f:mesaVirtual()}">
+								<a class="btn btn-primary float-right btn-sm ml-2"
+									href="javascript: window.location.href='/sigaex/app/mesa'"
+									title="Exibir os documentos que estão na mesa virtual">
+									Mesa Virtual</a>
+							</c:if>
 					</div>
 
 				</div>
 			</c:if>
-			<c:if
-				test="${f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA:Sistema Integrado de Gestão Administrativa;WF:Módulo de Workflow') or f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA;SR') or f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA;GC:Módulo de Gestão de Conhecimento') or f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA;TP:Módulo de Transportes')}">
+			<c:if test="${f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA:Sistema Integrado de Gestão Administrativa;WF:Módulo de Workflow') or f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA;SR') or f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA;GC:Módulo de Gestão de Conhecimento') or f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA;TP:Módulo de Transportes')}">
 				<div class="col col-sm-12 col-md-6">
-					<c:if
-						test="${f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA:Sistema Integrado de Gestão Administrativa;WF:Módulo de Workflow')}">
+					<c:if test="${f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA:Sistema Integrado de Gestão Administrativa;WF:Módulo de Workflow')}">
 						<div class="card bg-light mb-3">
 							<div class="card-header"><a href="/sigawf/app/ativos">Tarefas</a></div>
 							<div class="card-body">
@@ -111,6 +109,21 @@
 								</div>
 							</div>
 						</div>
+						<c:if test="${!ehPublicoExterno}">
+							<div class="mt-2">
+								<c:if test="${f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA;WF;INI:Iniciar')}">
+									<a class="btn btn-primary float-right btn-sm ml-2"
+										href="javascript: window.location.href='/sigawf/app/listar-para-iniciar'"
+										title="Iniciar a execução de procedimento">
+										<fmt:message key = "documento.novoWF"/></a> 
+								</c:if>
+								<a class="btn btn-primary float-right btn-sm ml-2"
+								   href="javascript: window.location.href='/sigawf/app/pesquisar-procedimentos'"
+								   title="Pesquisar procedimentos">
+								   Pesquisar</a>
+							</div>
+						</c:if>
+
 					</c:if>
 					<c:if
 						test="${f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA;SR')}">

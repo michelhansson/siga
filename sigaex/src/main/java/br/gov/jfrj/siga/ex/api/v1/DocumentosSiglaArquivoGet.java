@@ -1,6 +1,7 @@
 package br.gov.jfrj.siga.ex.api.v1;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,6 +41,16 @@ public class DocumentosSiglaArquivoGet implements IDocumentosSiglaArquivoGet {
 
 		HttpServletRequest request = SwaggerServlet.getHttpServletRequest();
 		SigaObjects so = new SigaObjects(request);
+		
+		String usuarioGerador = ExDao.getInstance().usuarioEmissorDocumento(so.getCadastrante());
+
+		if (usuarioGerador != null || !"".equals(usuarioGerador)) {
+			final Date dt = ExDao.getInstance().consultarDataEHoraDoServidor();
+			if (!mob.getSigla().contains("TMP")) {
+				ExDao.getInstance().salvarAcessoDocumento(so.getCadastrante(), so.getIdentidadeCadastrante(), so.getIpAdress(), usuarioGerador, mob.getSigla(), "aux", dt, mob.doc());
+			}	
+		}
+		
 		if (!Ex.getInstance().getComp().pode(ExPodeAcessarDocumento.class, so.getTitular(), so.getLotaTitular(), mob))
 			throw new AplicacaoException(
 					"Acesso ao documento " + mob.getSigla() + " permitido somente a usuários autorizados. ("
@@ -51,11 +62,11 @@ public class DocumentosSiglaArquivoGet implements IDocumentosSiglaArquivoGet {
 		final String servernameport = request.getServerName() + ":" + request.getServerPort();
 		final String contextpath = request.getContextPath();
 
-		iniciarGeracaoDePdf(req, resp, usuario, filename, contextpath, servernameport);
+		iniciarGeracaoDePdf(req, resp, usuario, filename, contextpath, servernameport, usuarioGerador);
 	}
 
 	public static void iniciarGeracaoDePdf(Request req, Response resp, String u, String filename, String contextpath,
-			String servernameport) throws IOException, Exception {
+			String servernameport, String usuarioGerador) throws IOException, Exception {
 		resp.uuid = UUID.randomUUID().toString();
 		String uuid = resp.uuid;
 		Status.update(uuid, "Aguardando na fila de tarefas", 0, 100, 0L);
@@ -67,7 +78,7 @@ public class DocumentosSiglaArquivoGet implements IDocumentosSiglaArquivoGet {
 		boolean volumes = req.volumes == null ? false : req.volumes;
 		boolean exibirReordenacao = req.exibirReordenacao == null ? false : req.exibirReordenacao;
 		DownloadAssincrono task = new DownloadAssincrono(uuid, contenttype, sigla, estampar, volumes, contextpath,
-				servernameport, exibirReordenacao);
+				servernameport, exibirReordenacao, usuarioGerador);
 
 		ExApiV1Servlet.submitToExecutor(task);
 	}

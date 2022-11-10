@@ -8,7 +8,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://localhost/functiontag" prefix="f"%>
 
-<siga:pagina titulo="Movimentação" desabilitarmenu="sim"
+<siga:pagina titulo="Autenticidade de Documentos" desabilitarmenu="sim"
 	onLoad="try{var num = document.getElementById('id_number');if (num.value == ''){num.focus();num.select();}else{var cap = document.getElementById('id_captcha');cap.focus();cap.select();}}catch(e){};">
 
 	<div class="container-fluid">
@@ -171,10 +171,10 @@
 														test="${ (exibirCompleto == true) or (mov != CANCELAMENTO_DE_MOVIMENTACAO and not mov.cancelada)}">
 														<tr class="${mov.classe} ${mov.disabled}">
 															<c:if test="${ (exibirCompleto == 'true')}">
-																<c:set var="dt" value="${mov.dtRegMovDDMMYYHHMMSS}" />
+																<c:set var="dt" value="${mov.dtRegMovDDMMYYYYHHMMSS}" />
 															</c:if>
 															<c:if test="${ (exibirCompleto != 'true')}">
-																<c:set var="dt" value="${mov.dtRegMovDDMMYY}" />
+																<c:set var="dt" value="${mov.dtRegMovDDMMYYYY}" />
 															</c:if>
 															<c:choose>
 																<c:when test="${dt == dtUlt}">

@@ -108,6 +108,7 @@ import br.gov.jfrj.siga.base.SigaMessages;
 import br.gov.jfrj.siga.base.SigaModal;
 import br.gov.jfrj.siga.base.UsuarioDeSistemaEnum;
 import br.gov.jfrj.siga.base.util.SetUtils;
+import br.gov.jfrj.siga.base.util.Texto;
 import br.gov.jfrj.siga.base.util.Utils;
 import br.gov.jfrj.siga.bluc.service.BlucService;
 import br.gov.jfrj.siga.bluc.service.EnvelopeRequest;
@@ -240,6 +241,7 @@ import br.gov.jfrj.siga.sinc.lib.Sincronizavel;
 import br.gov.jfrj.siga.sinc.lib.SincronizavelSuporte;
 import br.gov.jfrj.siga.wf.service.WfProcedimentoWSTO;
 import br.gov.jfrj.siga.wf.service.WfService;
+import br.jus.tjpa.siga.service.UsuarioService;
 
 public class ExBL extends CpBL {
 	private static final String ERRO_EXCLUIR_ARQUIVO = "Erro ao excluir o arquivo";
@@ -1460,13 +1462,55 @@ public class ExBL extends CpBL {
 
 	public String assinarDocumento(final DpPessoa cadastrante, final DpLotacao lotaCadastrante, final ExDocumento doc,
 			final Date dtMov, final byte[] pkcs7, final byte[] certificado, ITipoDeMovimentacao tpMovAssinatura, Boolean juntar,
-			Boolean tramitar, Boolean exibirNoProtocolo, DpPessoa titular) throws AplicacaoException, SQLException {
+			Boolean tramitar, Boolean exibirNoProtocolo, DpPessoa titular, final String usuarioSubscritor, final String senhaSubscritor,
+			final boolean assinarTjpa) throws AplicacaoException, SQLException {
 		DpPessoa cosignatario = null;
 		boolean fSubstituindoSubscritor = false;
 		boolean fSubstituindoCosignatario = false;
 		String sNome;
 		Long lCPF = null;
 
+		// DEVE CHECAR USUÁRIO E SENHA EM CASO DE ASSINATURA DO TJPA
+		DpPessoa subscritor = null;
+		if (assinarTjpa) {
+			String ip = dao().consultarIPDoServidor();
+			try {
+				UsuarioService usuarioService = new UsuarioService();
+				String resultado = usuarioService.validarUsuarioRede(usuarioSubscritor, senhaSubscritor, ip, ip);
+				if (!resultado.equalsIgnoreCase("AUTENTICADO")) {
+					throw new RuntimeException("Login de rede ou senha inválida.");
+				}
+				log.info("Login: " + usuarioSubscritor + ", autenticado com sucesso (ASSINATURA)!");
+			} catch (Exception e) {
+				throw new RuntimeException("Falha no serviço de autenticação (LDAP). ->" + e.getMessage());
+			}
+
+			subscritor = dao().consultarPorEmailLogin(usuarioSubscritor.toLowerCase()+System.getProperty("servidor.dominio"));
+			if (subscritor == null) {
+					throw new RuntimeException("Este usuário não está cadastrado no sistema (ASSINATURA)");
+			}
+			
+			if (subscritor.getCpTipoPessoa().getIdTpPessoa() == 3) {
+				throw new RuntimeException("Usuário não tem permissão para assinar documento.");
+			}
+			
+			//GiService giService = Service.getGiService(); 
+			//if (giService != null) {
+			//	String usuarioLogado = giService.dadosUsuario(subscritor.getSesbPessoa() + subscritor.getMatricula().toString()); 
+			//	if (usuarioLogado == null || usuarioLogado.trim().length() == 0) {
+			//		throw new RuntimeException("Falha de autenticação!"); 
+			//	}
+			//}
+		}
+
+		if (!assinarTjpa) {
+			subscritor = doc.getSubscritor();
+		}
+
+		if (assinarTjpa && !cadastrante.getCpfPessoa().equals(subscritor.getCpfPessoa())) {
+			throw new RuntimeException("Usuário e subscritor não são a mesma pessoa.");
+		}
+		
 		if (doc.isCancelado())
 			throw new AplicacaoException("não é possível assinar um documento cancelado.");
 
@@ -1475,8 +1519,9 @@ public class ExBL extends CpBL {
 					"Não é possível assinar o documento pois a descrição está vazia. Edite-o e informe uma descrição.");
 
 		if (!doc.isFinalizado())
-			throw new AplicacaoException(
-					"Não é possível assinar o documento pois não está finalizado.");
+			finalizar(cadastrante, lotaCadastrante, doc);
+//			throw new AplicacaoException(
+//					"Não é possível assinar o documento pois não está finalizado.");
 
 		boolean fPreviamenteAssinado = !doc.isPendenteDeAssinatura();
 
@@ -1589,12 +1634,12 @@ public class ExBL extends CpBL {
 			}
 
 			if (!fValido && lCPF != null) {
-				if (doc.getSubscritor() != null && lCPF.equals(doc.getSubscritor().getCpfPessoa())) {
+				if (doc.getSubscritor() != null && lCPF.equals(doc.getSubscritor().getCpfPessoa()) && lCPF.equals(subscritor.getCpfPessoa())) {
 					fValido = true;
 					usuarioDoToken = doc.getSubscritor();
 				}
 				if (!fValido) {
-					fValido = (lCPF.equals(doc.getCadastrante().getCpfPessoa())) && (doc.getExTipoDocumento()
+					fValido = (lCPF.equals(doc.getCadastrante().getCpfPessoa()) && lCPF.equals(subscritor.getCpfPessoa())) && (doc.getExTipoDocumento()
 							.getIdTpDoc() == ExTipoDocumento.TIPO_DOCUMENTO_EXTERNO_FOLHA_DE_ROSTO);
 				}
 				if (!fValido)
@@ -1602,7 +1647,7 @@ public class ExBL extends CpBL {
 						if (m.getExTipoMovimentacao()
 								== ExTipoDeMovimentacao.INCLUSAO_DE_COSIGNATARIO
 								&& m.getExMovimentacaoCanceladora() == null
-								&& lCPF.equals(m.getSubscritor().getCpfPessoa())) {
+								&& lCPF.equals(m.getSubscritor().getCpfPessoa()) && lCPF.equals(subscritor.getCpfPessoa())) {
 							fValido = true;
 							usuarioDoToken = m.getSubscritor();
 							continue;
@@ -1641,10 +1686,39 @@ public class ExBL extends CpBL {
 				}
 			}
 
+			// TJPA - CHECA SE USUÁRIO SUBSCRITOR INFORMADO É SIGNATÁRIO OU COSIGNATÁRIO
+			if (assinarTjpa) {
+				if (subscritor != null) {
+					if (doc.getSubscritor() != null
+							&& subscritor.equivale(doc.getSubscritor())) {
+						fValido = true;
+					}
+					if (!fValido) {
+						fValido = (subscritor.equivale(doc.getCadastrante()))
+								&& (doc.getExTipoDocumento().getIdTpDoc() == ExTipoDocumento.TIPO_DOCUMENTO_EXTERNO_FOLHA_DE_ROSTO);
+					}
+					if (!fValido)
+						for (ExMovimentacao m : doc.getMobilGeral()
+								.getExMovimentacaoSet()) {
+							if (m.getExTipoMovimentacao() == ExTipoDeMovimentacao.INCLUSAO_DE_COSIGNATARIO
+									&& m.getExMovimentacaoCanceladora() == null
+									&& subscritor.equivale(m.getSubscritor())) {
+								fValido = true;
+								continue;
+							}
+						}
+				}
+			}
+
 			if (lMatricula == null && lCPF == null)
 				throw new AplicacaoException("não foi possível recuperar nem a matrícula nem o CPF do assinante");
-			if (!lCPF.equals(cadastrante.getCpfPessoa()))
+			if (lCPF != null) {
+				List<CpIdentidade> listaIdentidades = new ArrayList<CpIdentidade>();
+				listaIdentidades = CpDao.getInstance().consultaIdentidadesPorCpf(lCPF.toString());
+				if (listaIdentidades == null || listaIdentidades.size() == 0)
 				throw new AplicacaoException("Usuário não permitido a utilizar o certificado digital de " + sNome);
+			}
+
 			if (fValido == false)
 				throw new AplicacaoException("Assinante não é subscritor nem cossignatario");
 		} catch (final AplicacaoException e) {
@@ -1685,7 +1759,11 @@ public class ExBL extends CpBL {
 				// mov.setConteudoBlobMov2(pkcs7);
 				// }
 	
-				mov.setDescrMov(assinante.getNomePessoa() + ":" + assinante.getSigla() + " [Digital]");
+				if (assinarTjpa) {
+					mov.setDescrMov(mov.getSubscritor().getNomePessoa() + ":" + sNome);
+				} else {
+					mov.setDescrMov(assinante.getNomePessoa() + ":" + assinante.getSigla() + " [Digital]");
+				}
 				
 				gravarMovimentacao(mov);
 	
@@ -2269,8 +2347,52 @@ public class ExBL extends CpBL {
 	}
 
 	public void assinarMovimentacao(DpPessoa cadastrante, DpLotacao lotaCadastrante, ExMovimentacao movAlvo,
-			final Date dtMov, final byte[] pkcs7, final byte[] certificado, ITipoDeMovimentacao tpMovAssinatura)
+			final Date dtMov, final byte[] pkcs7, final byte[] certificado, ITipoDeMovimentacao tpMovAssinatura,
+			final String usuarioSubscritor, final String senhaSubscritor, final boolean assinarTjpa)
 			throws AplicacaoException {
+
+		DpPessoa subscritor = null;
+		
+		// DEVE CHECAR USUÁRIO E SENHA EM CASO DE ASSINATURA DO TJPA
+		if (assinarTjpa) {
+			String ip = dao().consultarIPDoServidor();
+			try {
+				UsuarioService usuarioService = new UsuarioService();
+				String resultado = usuarioService.validarUsuarioRede(usuarioSubscritor, senhaSubscritor, ip, ip);
+				if (!resultado.equalsIgnoreCase("AUTENTICADO")) {
+					throw new RuntimeException("Login de rede ou senha inválida.");
+				}
+				log.info("Login: " + usuarioSubscritor + ", autenticado com sucesso (ASSINATURA - *assinarMovimentação)!");
+			} catch (Exception e) {
+				throw new RuntimeException("Login de rede ou senha inválida.");
+			}
+
+			subscritor = dao().consultarPorEmailLogin(usuarioSubscritor.toLowerCase()+System.getProperty("servidor.dominio"));
+			if (subscritor == null) {
+					throw new RuntimeException("Este usuário não está cadastrado no sistema");
+			}
+
+			if (subscritor.getCpTipoPessoa().getIdTpPessoa() == 3) {
+					throw new RuntimeException("Usuário não tem permissão para assinar documento.");
+			}
+				
+				
+			//GiService giService = Service.getGiService();
+			//if (giService != null) {
+			//	String usuarioLogado = giService.dadosUsuario(subscritor.getSesbPessoa() + subscritor.getMatricula().toString());
+			//	if (usuarioLogado == null || usuarioLogado.trim().length() == 0) {
+			//		throw new RuntimeException("Falha de autenticação!");
+			//	}
+			//}
+		}
+		
+		if (!assinarTjpa) {
+			subscritor = movAlvo.getSubscritor();
+		}
+		
+		if (assinarTjpa && !cadastrante.getCpfPessoa().equals(subscritor.getCpfPessoa())) {
+			throw new RuntimeException("Usuário e subscritor não são a mesma pessoa.");
+		}
 
 		if (movAlvo != null) {
 			log.info("Assinando movimentacao: " + movAlvo.toString() + " Id da movimentação: " + movAlvo.getIdMov());
@@ -2374,6 +2496,16 @@ public class ExBL extends CpBL {
 								&& lCPF.equals(movAlvo.getSubscritor().getCpfPessoa());
 					}
 
+					// TJPA - CHECA SE USUÁRIO SUBSCRITOR INFORMADO É SIGNATÁRIO OU COSIGNATÁRIO
+					if (assinarTjpa) {
+						if (subscritor != null) {
+							if (movAlvo.getSubscritor() != null
+									&& subscritor.equivale(movAlvo.getSubscritor())) {
+								fValido = true;
+							}
+						}
+					}
+					
 					if (lMatricula == null && lCPF == null) {
 						log.warn("não foi possível recuperar nem a matrícula nem o CPF do assinante");
 						throw new AplicacaoException(
@@ -2420,7 +2552,11 @@ public class ExBL extends CpBL {
 			// mov.setConteudoBlobMov2(pkcs7);
 			// }
 
-			mov.setDescrMov(sNome);
+			if (assinarTjpa) {
+				mov.setDescrMov(mov.getSubscritor().getNomePessoa() + ":" + sNome);
+			} else {
+				mov.setDescrMov(sNome);
+			}
 
 			gravarMovimentacao(mov);
 			concluirAlteracao(mov);
@@ -4328,7 +4464,11 @@ public class ExBL extends CpBL {
 				throw new AplicacaoException("Opção inválida.");
 
 			gravarMovimentacao(mov);
-
+			
+			//TJPA - Não sei se será preciso nesta versao
+			/*
+			 * if (mov.getExMobilRef() == null) { mov.setExMobilRef(mobPai); }
+			 */
 			atualizarMarcas(false, mob);
 
 			if (idDocEscolha.equals("1")) {
@@ -6359,12 +6499,52 @@ public class ExBL extends CpBL {
 			modeloSetFinal = new ArrayList<ExModelo>(forma.getExModeloSet());
 		else
 			modeloSetFinal = (ArrayList) dao().listarTodosModelosOrdenarPorNome(tipo, null);
+		
+		//INICIO - TJPA
+		ArrayList<ExModelo> modelos = new ArrayList<ExModelo>();
+
+		for (ExModelo mod : modeloSetFinal) {
+			if (mod.getNmMod().equals("Documento Externo")
+					&& !titular.getLotacao().getDescricao().toLowerCase().contains("proto")
+					&& !titular.getLotacao().getDescricao().toLowerCase()
+							.contains("apoio tecnico juridico da presidencia")
+					&& !titular.getLotacao().getDescricao().toLowerCase()
+							.contains("servico de licitacoes")
+					&& ((titular.getFuncaoConfianca() != null && !titular.getFuncaoConfianca().getDescricao().toLowerCase()
+							.contains("protocolo")) || titular.getFuncaoConfianca() == null)) {
+				continue;
+			} else {
+					modelos.add(mod);
+			}
+		}
+		
+		if (modelos.size() > 0 && modelos != null) {
+			modeloSetFinal = null;
+			modeloSetFinal = modelos;
+		}
+		// FIM
+		
 		if (criandoSubprocesso && mobPai != null) {
 			ExFormaDocumento especie = mobPai.doc().getExModelo().getExFormaDocumento();
 			provSet = new ArrayList<ExModelo>();
-			for (ExModelo mod : modeloSetFinal)
-				if (especie.equals(mod.getExFormaDocumento()))
-					provSet.add(mod);
+			for (ExModelo mod : modeloSetFinal) {
+				//if (especie.equals(mod.getExFormaDocumento()))
+				//	provSet.add(mod);
+				// TJPA	
+				if (mod.getNmMod().equals("Documento Externo")
+						&& !titular.getLotacao().getDescricao().toLowerCase().contains("proto")
+						&& !titular.getLotacao().getDescricao().toLowerCase()
+								.contains("apoio tecnico juridico da presidencia")
+						&& !titular.getLotacao().getDescricao().toLowerCase()
+								.contains("servico de licitacoes")
+						&& ((titular.getFuncaoConfianca() != null && !titular.getFuncaoConfianca().getDescricao().toLowerCase()
+								.contains("protocolo")) || titular.getFuncaoConfianca() == null)) {
+					continue;
+				} else {
+					if (especie.equals(mod.getExFormaDocumento()))
+						provSet.add(mod);
+				}
+			}
 			modeloSetFinal = provSet;
 		}
 
@@ -6418,6 +6598,7 @@ public class ExBL extends CpBL {
 			mod.setNmMod("[" + headerValue + "]");
 			modeloSetFinal.add(0, mod);
 		}
+		
 		return modeloSetFinal;
 	}
 
@@ -6763,6 +6944,45 @@ public class ExBL extends CpBL {
 			cancelarAlteracao();
 			throw new RuntimeException("Erro ao encerrar volume.", e);
 		}
+	}
+
+	public String verificarAssinatura(byte[] conteudo, byte[] assinatura, String mimeType, Date dtAssinatura)
+			throws Exception {
+		BlucService bluc = Service.getBlucService();
+
+		// Chamar o BluC para validar a assinatura
+		//
+		ValidateRequest validatereq = new ValidateRequest();
+		validatereq.setEnvelope(bluc.bytearray2b64(assinatura));
+		validatereq.setSha1(bluc.bytearray2b64(bluc.calcSha1(conteudo)));
+		validatereq.setSha256(bluc.bytearray2b64(bluc.calcSha256(conteudo)));
+		validatereq.setTime(dtAssinatura);
+		validatereq.setCrl("true");
+		ValidateResponse validateresp = assertValid(bluc, validatereq);
+
+		String sNome;
+		Long lCPF;
+
+		sNome = validateresp.getCn();
+
+		Service.throwExceptionIfError(sNome);
+
+		if (sNome != null) {
+			sNome = Texto.maiusculasEMinusculas(sNome);
+		}
+
+		String sCPF = validateresp.getCertdetails().get("cpf0");
+		Service.throwExceptionIfError(sCPF);
+
+		lCPF = Long.valueOf(sCPF);
+
+		if (validateresp.getPolicy() == null)
+			return sNome;
+
+		if (validateresp.getPolicyversion() == null)
+			return sNome + " (" + validateresp.getPolicy() + ")";
+
+		return sNome + " (" + validateresp.getPolicy() + " v" + validateresp.getPolicyversion() + ")";
 	}
 
 	public void gravarModelo(ExModelo modNovo, ExModelo modAntigo, Date dt, CpIdentidade identidadeCadastrante)
@@ -8068,7 +8288,7 @@ public class ExBL extends CpBL {
 		ExMovimentacao movimentacaoOrigem = null; 
 		String[] personalizacaoAssinatura = new String[4];	
 		
-		if (movimentacao.getExDocumento().getSubscritor().equivale(movimentacao.getSubscritor())) {
+		if (movimentacao.getExDocumento().getSubscritor() != null && movimentacao.getExDocumento().getSubscritor().equivale(movimentacao.getSubscritor())) {
 			if (movimentacao.getExDocumento().getNmFuncaoSubscritor() != null ) {
 				personalizacaoAssinatura = movimentacao.getExDocumento().getNmFuncaoSubscritor().split(";");
 			} else if (!exibeFuncaoLotacaoSemPersonalizacao) {

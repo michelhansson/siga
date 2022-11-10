@@ -40,7 +40,7 @@
 				<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000"
 					bottomBorder="None" bottomBorderColor="#000000" />
 				<graphicElement stretchType="NoStretch" pen="None" fill="Solid" />
-				<imageExpression class="java.lang.String"><![CDATA["brasao.png"]]></imageExpression>
+				<imageExpression class="java.lang.String"><![CDATA["brasao_tjpa.png"]]></imageExpression>
 			</image>
 			<staticText>
 				<reportElement mode="Opaque" x="71" y="26" width="98" height="13" forecolor="#000000" backcolor="#FFFFFF" key="staticText-2"

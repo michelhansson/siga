@@ -173,7 +173,7 @@
 							<div class="col-sm-6">
 								<div class="form-group">
 									<div id="tr_titular"
-										style="${!substituicao ? 'display: none' : ''}">
+										style="${!substituicao == '' ? 'display: none' : ''}">
 										<label>Titular</label> <input class="form-control"
 											type="hidden" name="campos" value="titularSel.id" />
 										<siga:selecao propriedade="titular" tema="simple"
@@ -248,7 +248,7 @@
 							<div class="col-sm">
 								<input type="submit" value="Ok" class="btn btn-primary"
 									onclick="javascript: return validaSelecaoAnexo( this.form );" />
-								<input type="button" value="Cancela"
+								<input type="button" value="Voltar"
 									onclick="javascript:window.location.href='/sigaex/app/expediente/doc/exibir?sigla=${mobilVO.sigla}'"
 									class="btn btn-cancel ml-2" /><input class="ml-2"
 									type="checkbox" name="check"
@@ -385,9 +385,11 @@
 										name="ad_url_pdf_${mov.idMov}"
 										value="/sigaex/app/arquivo/exibir?arquivo=${mov.mov.nmPdf}" />
 										<input type="hidden" name="ad_url_post_${mov.idMov}"
-										value="/sigaex/app/expediente/mov/assinar_mov_gravar" /> <input
+										value="/sigaex/app/expediente/mov/assinar_mov_gravar" /><!-- <input
 										type="hidden" name="ad_url_post_password_${mov.idMov}"
-										value="/sigaex/app/expediente/mov/assinar_mov_login_senha_gravar" />
+										value="/sigaex/app/expediente/mov/assinar_mov_login_senha_gravar" />  --> <input
+										type="hidden" name="ad_url_post_password_${mov.idMov}"
+										value="/sigaex/app/expediente/mov/assinar_mov_tjpa_gravar" />
 										<input type="hidden" name="ad_id_${mov.idMov}"
 										value="${fn:replace(mov.mov.referencia, ':', '_')}" /> <input
 										type="hidden" name="ad_description_${mov.idMov}"

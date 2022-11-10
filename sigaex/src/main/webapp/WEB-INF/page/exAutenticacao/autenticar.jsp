@@ -21,7 +21,7 @@
 	<fmt:message key="tela.autenticar.texto4" />
 </c:set>
 
-<siga:pagina titulo="Movimentação" desabilitarmenu="sim"
+<siga:pagina titulo="Autenticidade de Documentos" desabilitarmenu="sim"
 	onLoad="try{var num = document.getElementById('id_number');if (num.value == ''){num.focus();num.select();}else{var cap = document.getElementById('id_captcha');cap.focus();cap.select();}}catch(e){};">
 	<script src='https://www.google.com/recaptcha/api.js'></script>
 	<div class="container-fluid">
@@ -57,19 +57,24 @@
 									<button type="submit" class="btn btn-lg btn-primary btn-block"><i class="fas fa-stamp"></i> Autenticar</button>
 								</div>
 							</div>
+							<div class"row">
+								<div class="col" style="padding: 0;">
+									<a href="http://www.tjpa.jus.br/PortalExterno/imprensa/noticias/Informes/1212160-documentos-oficiais-devem-conter-logomarca-do-selo-prata-de-qualidade.xhtml" target="_blank" title="Selo CNJ de qualidade - Prata - 2021"><img style="margin-top: 0px; margin-bottom: -13px;float:right;"	src="/siga/imagens/selo-prata.png"></a>		
+								</div>
+							</div>
 						</form>
 					</div>	
 				</div>
 			</div>
 			<div class="col">
 			
-				<div class="card mb-3" >
+				<div class="card mb-6" >
 				  <div class="card-header">
 				    <h5>Informações Gerais</h5>
 				  </div>
 				  <div class="card-body">
 				    <c:if test="${!fn:startsWith(texto1,'???')}">
-							<p>${texto1}</p>
+							<p style="font-weight: bold;">${texto1}</p>
 						</c:if>
 						<c:if test="${!fn:startsWith(texto2,'???')}">
 							<p>

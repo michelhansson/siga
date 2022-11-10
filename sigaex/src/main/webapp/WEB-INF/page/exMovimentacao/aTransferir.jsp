@@ -192,7 +192,7 @@ $(function(){
 					  </div>
 					</div>
 				</c:if>
-				<c:if test="${siga_cliente != 'GOVSP'}">
+				<c:if test="${siga_cliente != 'TJPA'}">
 					<div class="row">
 						<div class="col col-3">
 							<div class="form-group mb-0">
@@ -202,13 +202,14 @@ $(function(){
 						</div>
 					</div>	
 				</c:if>
-				<c:if test="${siga_cliente != 'GOVSP'}">			
+				<c:if test="${siga_cliente != 'TJPA'}">			
 					<div class="row">
 						<div class="col col-12">
 								<small class="form-text text-muted">Atenção: somente preencher a data de devolução se a intenção for, realmente, que o documento seja devolvido até esta data.</small>
 						</div>				
 					</div>
 				</c:if>				
+				<!-- 
 				<div class="row">
 					<div class="col col-9">
 						<div class="form-check form-check-inline mt-3 mb-3">
@@ -225,6 +226,7 @@ $(function(){
 					</div>
 					</c:if>
 				</div>
+				-->
 				<div class="row">
 					<div class="col col-12">
 						<div class="form-group">

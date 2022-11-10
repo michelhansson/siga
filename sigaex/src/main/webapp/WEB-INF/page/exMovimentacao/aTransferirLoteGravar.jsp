@@ -187,7 +187,7 @@
 			<input type="hidden" name="campoDe" id="campoDe" value="${lotaTitular.descricao} - ${cadastrante.descricao}" />
 			<input type="hidden" name="campoPara" id="campoPara" value="${mov.respString}" />
 			<input type="hidden" name="campoData" id="campoData" value="${mov.dtRegMovDDMMYYYYHHMMSS}" />
-			<button type="submit" class="btn btn-primary">Gerar Protocolo</button>
+			<button type="submit" class="btn btn-primary" style="display: none;">Gerar Protocolo</button>
 
 		</c:if>
 		<button type="button" class="btn btn-primary" onclick="javascript:history.back();" >Voltar</button>	

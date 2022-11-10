@@ -12,6 +12,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.imageio.ImageIO;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -234,11 +236,23 @@ public class Stamp {
 				// continuidade
 				// do projeto que se faça essa divulgação.
 
-				InputStream stream = Documento.class.getClassLoader()
-						.getResourceAsStream("/br/gov/jfrj/itextpdf/logo-siga-novo-166px.png");
-				if (stream != null) {
-					byte[] ab = IOUtils.toByteArray(stream);
-					final Image logo = Image.getInstance(ab);
+				Image logo = null;
+				final boolean seloCNJ = Prop.getBool("selo.cnj");
+				if (seloCNJ) {
+					BufferedImage bi = new BufferedImage(200,200,BufferedImage.TYPE_INT_RGB);
+					bi = ImageIO.read(Documento.class.getClassLoader().getResource("/br/gov/jfrj/itextpdf/selo-prata.png"));
+					logo = Image.getInstance(bi, Color.WHITE, false);
+					bi.flush();
+
+				} else {
+					InputStream stream = Documento.class.getClassLoader().getResourceAsStream("/br/gov/jfrj/itextpdf/logo-siga-novo-166px.png");
+					if (stream != null) {
+						byte[] ab = IOUtils.toByteArray(stream);
+						logo = Image.getInstance(ab);
+					}	
+				}
+
+				if (logo != null) {
 //				
 					logo.scaleToFit(image39.getHeight(), image39.getHeight());
 					logo.setAbsolutePosition(
@@ -259,7 +273,7 @@ public class Stamp {
 					over.addImage(mask);
 
 					over.setRGBColorFill(255, 255, 255);
-					logo.setAnnotation(new Annotation(0, 0, 0, 0, "https://linksiga.trf2.jus.br"));
+					logo.setAnnotation(new Annotation(0, 0, 0, 0, "https://www.tjpa.jus.br/PortalExterno/imprensa/noticias/Informes/1212160-documentos-oficiais-devem-conter-logomarca-do-selo-prata-de-qualidade.xhtml"));
 
 					if (Prop.isGovSP()) {
 						if (i == 1)
@@ -302,7 +316,8 @@ public class Stamp {
 							(QRCODE_LEFT_MARGIN_IN_CM + QRCODE_SIZE_IN_CM + STAMP_BORDER_IN_CM) * CM_UNIT,
 							(PAGE_BORDER_IN_CM - STAMP_BORDER_IN_CM) * CM_UNIT);
 					mask.scaleAbsolute(2 * STAMP_BORDER_IN_CM * CM_UNIT + table.getTotalWidth(),
-							2 * STAMP_BORDER_IN_CM * CM_UNIT + table.getTotalHeight());
+							0 * STAMP_BORDER_IN_CM * CM_UNIT + table.getTotalHeight());
+					//		2 * STAMP_BORDER_IN_CM * CM_UNIT + table.getTotalHeight());
 					over.addImage(mask);
 
 					over.setRGBColorFill(0, 0, 0);

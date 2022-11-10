@@ -32,7 +32,8 @@ import javax.persistence.NamedQuery;
 import br.gov.jfrj.siga.model.Objeto;
 
 @MappedSuperclass
-@NamedQueries({ @NamedQuery(name = "listarOrdemNivel", query = "from ExNivelAcesso as ena order by ena.grauNivelAcesso") })
+@NamedQueries({ @NamedQuery(name = "listarOrdemNivelOLD", query = "from ExNivelAcesso as ena order by ena.grauNivelAcesso"),
+			    @NamedQuery(name = "listarOrdemNivel", query = "from ExNivelAcesso as ena where ena.idNivelAcesso in (1,3,4,5) order by ena.grauNivelAcesso") })
 public abstract class AbstractExNivelAcesso extends Objeto implements
 		Serializable {
 

@@ -3,6 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://localhost/customtag" prefix="tags"%>
 <%@ taglib uri="http://localhost/jeetags" prefix="siga"%>
+<%@ taglib uri="http://localhost/libstag" prefix="f"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions"  prefix="fn"%>
@@ -11,6 +12,7 @@
 <c:set var="titulo"><fmt:message key="tela.consultaprocessopublico.titulo" /></c:set>
 <c:set var="texto1"><fmt:message key="tela.consultaprocessopublico.texto1" /></c:set>
 <c:set var="texto2"><fmt:message key="tela.consultaprocessopublico.texto2" /></c:set>
+<c:set var="seloCNJ" scope="request" value="${f:resource('/siga.selo.cnj')}" />
 
 <siga:pagina titulo="Consulta de Processos Públicos" desabilitarmenu="sim"
 	onLoad="try{var num = document.getElementById('id_number');if (num.value == ''){num.focus();num.select();}else{var cap = document.getElementById('id_captcha');cap.focus();cap.select();}}catch(e){};">
@@ -31,7 +33,7 @@
 								<div class="col">
 									<div class="form-group">
 										<label>Número do Processo</label> 
-										<input type="text" id="id_number" name="n" placeholder="Informe o número do Processo" class="form-control" value="${n}"/>
+										<input type="text" id="id_number" name="n" placeholder="Informe no formato: TJPA-EXT-AAAA/NNNNN" class="form-control" value="${n}"/>
 									</div>
 								</div>
 							</div>
@@ -42,6 +44,15 @@
 										<div class="g-recaptcha" data-sitekey="${recaptchaSiteKey}"></div>
 									</div>
 								</div>
+								<c:if test="${seloCNJ}">
+									<div class="col" style="padding: 0;">
+										<a href="http://www.tjpa.jus.br/PortalExterno/imprensa/noticias/Informes/1212160-documentos-oficiais-devem-conter-logomarca-do-selo-prata-de-qualidade.xhtml"
+											target="_blank" title="Selo CNJ de qualidade - Prata - 2021">
+											<img style="float: right;"	src="/siga/imagens/selo-prata.png">
+										</a>		
+									</div>
+								</c:if>
+								
 							</div>
 							<div class="row">
 								<div class="col">
@@ -62,6 +73,11 @@
 				  <div class="card-body">
 				  
 				    <c:if test="${!fn:startsWith(texto1,'???')}">	<p>    ${texto1} </p></c:if>
+				    
+				    <c:if test="${siglasPermitidas != ''}">
+				    	<p>Siglas permitidas: <span font-weight: bold;">${siglasPermitidas}</span></p>
+				    </c:if>
+				    
 					<c:if test="${!fn:startsWith(texto2,'???')}">	<p><u> ${texto2} </u></p></c:if> 
 					
 					 

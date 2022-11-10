@@ -13,12 +13,13 @@
 		/*  converte para maiï¿ºscula a sigla do estado  */
 		function converteUsuario(nomeusuario) {
 			tmp = nomeusuario.value;
-			nomeusuario.value = tmp.toUpperCase();
+			nomeusuario.value = tmp.toLowerCase();
 		}
 	</script>
 	
 	<c:set var="siga_cliente_sso" scope="request" value="${f:resource('/siga.integracao.sso')}" />
 	<c:set var="siga_cliente_sso_btn_txt" scope="request" value="${f:resource('/siga.integracao.sso.btn.txt')}" />
+	<c:set var="seloCNJ" scope="request" value="${f:resource('/siga.selo.cnj')}" />
 	
 	<c:choose>
 		<c:when test="${siga_cliente == 'GOVSP'}">
@@ -60,13 +61,13 @@
 					<form id="formLogin" role="form" method="post"
 						enctype="application/x-www-form-urlencoded">
 						<div class="form-group">
-							<label for="username"><fmt:message key="usuario.matricula"/></label> 
+							<label for="username"><fmt:message key="usuario.login"/></label> 
 					
 						    <div class="input-group">
 						      <div class="input-group-prepend">
 						        <span class="input-group-text" id="icon-user"><i class="fas fa-user"></i></span>
 						      </div>
-						      <input id="username" type="text" name="username" placeholder="<fmt:message key="usuario.digite.usuario"/>" onblur="javascript:converteUsuario(this)" autocorrect="off"
+						      <input id="username" type="text" name="username" placeholder="<fmt:message key="usuario.digite.login"/>" onblur="javascript:converteUsuario(this)" autocorrect="off"
 								autocapitalize="none" class="form-control" aria-label="Usuário" aria-describedby="icon-user">
 						    </div>
 	
@@ -93,11 +94,13 @@
 								<div class="text-center">
 									<button type="submit" class="btn btn-lg btn-primary btn-block"><i class="fas fa-sign-in-alt"></i> Entrar</button>								
 									<div class="mt-4">
-										<c:if test="${siga_cliente != 'GOVSP'}">
+										<c:if test="${siga_cliente != 'TJPA'}">
 											<a href="/siga/public/app/usuario/incluir_usuario"
 												class="btn btn-secondary btn-block mb-2"><fmt:message key = "usuario.sounovo"/></a> 
 										</c:if>
-										<a href="/siga/public/app/usuario/senha/reset" class="btn btn-link btn-block"><strong>Esqueci minha senha</strong></a>
+										<c:if test="${siga_cliente != 'TJPA'}">
+											<a href="/siga/public/app/usuario/esqueci_senha" class="btn btn-link btn-block"><strong>Esqueci minha senha</strong></a>
+										</c:if>
 									</div>
 									
 									<c:choose>
@@ -113,11 +116,35 @@
 										<div class="mt-3">
 										    <div class="d-flex justify-content-between">
 										    	   	<div>
-										    		Versão: ${versao}
+										    			Versão: ${versao}
 										    	    </div>
 										    	    <div>
-										    		<a class="text-top" href="http://linksiga.trf2.jus.br" target="_blank" class="btn btn-link">Sobre o SIGA</a> 
+										    			<a class="text-top" href="http://www.tjpa.jus.br/PortalExterno/institucional/Secretaria-de-Informatica/582276-video-tutoriais.xhtml" target="_blank" class="btn btn-link">Vídeos tutoriais</a> 
 										    	    </div>
+										    </div>
+										</div>
+										<div class="mt-3">
+											<hr class="my-2">
+										    <div class="d-flex justify-content-between">
+										    	<div>
+													<p class="text-left font-weight-bold" style="margin-bottom: 0px!important;">Links Úteis: </p>
+													<ul style="text-align: left!important;padding: 0 0 0 0;margin: 0;list-style-type: none;">
+														<li><a href="/siga/arquivos/apostila_sigaex.pdf" target="_blank" style="text-decoration: none;">Manual básico de uso</a></li>
+														<li><a href="/siga/arquivos/mudou_nesta_versão_SIGA.pdf" target="_blank" style="text-decoration: none;">O que mudou nesta versão</a></li>
+														<li><a href="https://powerbi.tjpa.jus.br/Reports/powerbi/SECINFO/05%20-%20BI_SIGADOC_2_5?rs:embed=true" target="_blank" style="text-decoration: none;">Portal de informações quantitativas</a></li>
+														<!-- <li><a href="/siga/arquivos/apostila_sigawf.pdf" target="_blank" style="text-decoration: none;">Apostila SIGA-Workflow</a></li>-->
+													</ul>
+											    </div>
+											    <div>
+													<c:if test="${seloCNJ}">
+														<div class="mt-0" style="padding: 0;">
+															<a href="http://www.tjpa.jus.br/PortalExterno/imprensa/noticias/Informes/1212160-documentos-oficiais-devem-conter-logomarca-do-selo-prata-de-qualidade.xhtml"
+																target="_blank" title="Selo CNJ de qualidade - Prata - 2021">
+																<img style="float:center;"	src="/siga/imagens/selo-prata.png">
+															</a>		
+														</div>
+													</c:if>
+											    </div>
 										    </div>
 										</div>
 									</c:if>

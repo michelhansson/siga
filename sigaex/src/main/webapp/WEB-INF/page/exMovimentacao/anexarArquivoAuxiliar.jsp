@@ -85,8 +85,8 @@
 		
 		function testTamanho() {
 			var tamanhoArquivo = parseInt(document.getElementById("idSelecaoArquivo").files[0].size);
-		    if(tamanhoArquivo > 10485760){
-		        alert("TAMANHO DO ARQUIVO EXCEDE O PERMITIDO (10MB)!");
+		    if(tamanhoArquivo > 21485760){
+		        alert("TAMANHO DO ARQUIVO EXCEDE O PERMITIDO (20MB)!");
 		        return false;
 		    }
 		}

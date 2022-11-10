@@ -20,6 +20,7 @@ package br.gov.jfrj.itextpdf;
 
 import static br.gov.jfrj.siga.ex.util.ProcessadorHtml.novoHtmlPersonalizado;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -227,6 +228,16 @@ public class Documento {
 				s = movAssinatura.getDescrMov().trim().toUpperCase();
 				s = s.replace(":", " - ");
 				s = s.replace("EM SUBSTITUIÇÃO A", "em substituição a");
+
+				// ASSINATURA DO TJPA
+				String[] desc = movAssinatura.getDescrMov().trim().toUpperCase().split(":");
+				s = desc[0];
+				if (desc[desc.length-1].contains("TRIBUNAL DE JUST"))
+					s += "(usuário)";
+				else
+					s += "(token)";
+
+				
 				s = s.intern();				
 				if (Prop.isGovSP()
 					|| (dataDeInicioDeObrigacaoExibirRodapeDeAssinatura != null && !dataDeInicioDeObrigacaoExibirRodapeDeAssinatura.after(dtDoc)
@@ -363,12 +374,161 @@ public class Documento {
 	public byte[] getDocumento(ExMobil mob, ExMovimentacao mov)
 			throws Exception {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		getDocumento(baos, null, mob, mov, false, true, false, null, null);
+		getDocumento(baos, null, mob, mov, false, true, false, null, null, null);
 		return baos.toByteArray();
 	}
 
+	public static byte[] getDocumento(ExMobil mob, ExMovimentacao mov,
+			boolean completo, boolean estampar, String hash, byte[] certificado, String usuarioEmissorDocumento)
+			throws Exception {
+		final ByteArrayOutputStream bo2 = new ByteArrayOutputStream();
+		PdfReader reader;
+		int n;
+		int pageOffset = 0;
+		ArrayList master = new ArrayList();
+		int f = 0;
+		Document document = null;
+		PdfCopy writer = null;
+		int nivelInicial = 0;
+		if (usuarioEmissorDocumento == null) {
+			usuarioEmissorDocumento = "";
+		}
+		// if (request.getRequestURI().indexOf("/completo/") == -1) {
+		// return getPdf(docvia, mov != null ? mov : docvia.getExDocumento(),
+		// mov != null ? mov.getNumVia() : docvia.getNumVia(), null,
+		// null, request);
+		// }
+
+		List<ExArquivoNumerado> ans = mob.filtrarArquivosNumerados(mov,
+				completo);
+
+		if (!completo && !estampar && ans.size() == 1) {
+			if (hash != null) {
+				// Calcula o hash do documento
+				String alg = hash;
+				MessageDigest md = MessageDigest.getInstance(alg);
+				md.update(ans.get(0).getArquivo().getPdf());
+				return md.digest();
+			} else {
+				return ans.get(0).getArquivo().getPdf();
+			}
+		}
+
+		try {
+			for (ExArquivoNumerado an : ans) {
+
+				// byte[] ab = getPdf(docvia, an.getArquivo(), an.getNumVia(),
+				// an
+				// .getPaginaInicial(), an.getPaginaFinal(), request);
+
+				String sigla = mob.getSigla();
+				if (an.getArquivo() instanceof ExMovimentacao) {
+					ExMovimentacao m = (ExMovimentacao) an.getArquivo();
+					if (m.getExTipoMovimentacao() == ExTipoDeMovimentacao.JUNTADA)
+						sigla = m.getExMobil().getSigla();
+				} else {
+					sigla = an.getMobil().getSigla();
+				}
+
+				byte[] ab = !estampar ? an.getArquivo().getPdf() : Stamp.stamp(an
+						.getArquivo().getPdf(), sigla, an.getArquivo()
+						.isRascunho(), an.isCopia(), an.getArquivo().isCancelado(), an
+						.getArquivo().isSemEfeito(), an.getArquivo()
+						.isInternoProduzido(), an.getArquivo().getQRCode(), an
+						.getArquivo().getMensagem() + usuarioEmissorDocumento, an.getPaginaInicial(),
+						an.getPaginaFinal(), an.getOmitirNumeracao(),
+						Prop.get("carimbo.texto.superior"), 
+						mob.getExDocumento().getOrgaoUsuario().getDescricao(), 
+						mob.getExDocumento().getMarcaDagua(), 
+						an.getMobil().getDoc().getIdsDeAssinantes());	
+						
+
+				// we create a reader for a certain document
+
+				reader = new PdfReader(ab);
+				reader.consolidateNamedDestinations();
+				// we retrieve the total number of pages
+				n = reader.getNumberOfPages();
+				// List bookmarks = SimpleBookmark.getBookmark(reader);
+				// master.add(new Bookmark)
+				// if (bookmarks != null) {
+				// if (pageOffset != 0)
+				// SimpleBookmark.shiftPageNumbers(bookmarks, pageOffset,
+				// null);
+				// master.addAll(bookmarks);
+				// }
+
+				if (f == 0) {
+					// step 1: creation of a document-object
+					document = new Document(reader.getPageSizeWithRotation(1));
+					// step 2: we create a writer that listens to the
+					// document
+					writer = new PdfCopy(document, bo2);
+					writer.setFullCompression();
+
+					// writer.setViewerPreferences(PdfWriter.PageModeUseOutlines);
+
+					// step 3: we open the document
+					document.open();
+
+					nivelInicial = an.getNivel();
+				}
+
+				// PdfOutline root = writer.getDirectContent().getRootOutline();
+				// PdfContentByte cb = writer.getDirectContent();
+				// PdfDestination destination = new
+				// PdfDestination(PdfDestination.FITH, position);
+				// step 4: we add content
+				PdfImportedPage page;
+				for (int j = 0; j < n;) {
+					++j;
+					page = writer.getImportedPage(reader, j);
+					writer.addPage(page);
+					if (j == 1) {
+						// PdfContentByte cb = writer.getDirectContent();
+						// PdfOutline root = cb.getRootOutline();
+						// PdfOutline oline1 = new PdfOutline(root,
+						// PdfAction.gotoLocalPage("1", false),"Chapter 1");
+
+						HashMap map = new HashMap();
+						map.put("Title", an.getNome());
+						map.put("Action", "GoTo");
+						map.put("Page", j + pageOffset + "");
+						map.put("Kids", new ArrayList());
+
+						ArrayList mapPai = master;
+						for (int i = 0; i < an.getNivel() - nivelInicial; i++) {
+							mapPai = ((ArrayList) ((HashMap) mapPai.get(mapPai
+									.size() - 1)).get("Kids"));
+						}
+						mapPai.add(map);
+					}
+
+				}
+				PRAcroForm form = reader.getAcroForm();
+				if (form != null)
+					writer.copyAcroForm(reader);
+
+				pageOffset += n;
+				f++;
+			}
+			if (!master.isEmpty())
+				writer.setOutlines(master);
+
+			// PdfDictionary info = writer.getInfo();
+			// info.put(PdfName.MODDATE, null);
+			// info.put(PdfName.CREATIONDATE, null);
+			// info.put(PdfName.ID, null);
+
+			document.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return bo2.toByteArray();
+	}
+
 	public static boolean getDocumento(OutputStream os, String uuid, ExMobil mob, ExMovimentacao mov,
-			boolean completo, boolean estampar, boolean volumes, String hash, byte[] certificado)
+			boolean completo, boolean estampar, boolean volumes, String hash, byte[] certificado, String usuarioEmissorDocumento)
 			throws Exception {
 		PdfReader reader;
 		int n;
@@ -377,6 +537,9 @@ public class Documento {
 		Document document = null;
 		PdfCopy writer = null;
 		int nivelInicial = 0;
+		if (usuarioEmissorDocumento == null) {
+			usuarioEmissorDocumento = "";
+		}
 
 		// if (request.getRequestURI().indexOf("/completo/") == -1) {
 		// return getPdf(docvia, mov != null ? mov : docvia.getExDocumento(),
@@ -408,6 +571,7 @@ public class Documento {
 		long bytes = 0;
 		long garbage = 0;
 		int ansSize = ans.size();
+
 		try {
 			while (ans.size() > 0) {
 				ExArquivoNumerado an = ans.get(0);
@@ -435,7 +599,7 @@ public class Documento {
 						.isRascunho(), an.isCopia(), an.getArquivo().isCancelado(), an
 						.getArquivo().isSemEfeito(), an.getArquivo()
 						.isInternoProduzido(), an.getArquivo().getQRCode(), an
-						.getArquivo().getMensagem(), an.getPaginaInicial(),
+						.getArquivo().getMensagem() + usuarioEmissorDocumento, an.getPaginaInicial(),
 						an.getPaginaFinal(), an.getOmitirNumeracao(),
 						Prop.get("carimbo.texto.superior"), 
 						mob.getExDocumento().getOrgaoUsuario().getDescricao(), 
@@ -515,13 +679,21 @@ public class Documento {
 				f++;
 				an.evict();
 				an = null;
+
 				
 				garbage += ab.length;
 				if (garbage > 1000000) {
 					garbage = 0;
 					System.gc();
-				}
+				}				 				
+				
+				/*
+				 * if (Prop.get("arquivo.tamanho.gc") != null) { garbage += ab.length; if
+				 * (garbage > Long.valueOf(Prop.get("arquivo.tamanho.gc"))) { garbage = 0;
+				 * System.gc(); } }
+				 */					
 			}
+			
 			if (!master.isEmpty())
 				writer.setOutlines(master);
 
@@ -587,7 +759,7 @@ public class Documento {
 	}
 
 	public static void getDocumentoHTML(OutputStream os, String uuid, ExMobil mob, ExMovimentacao mov,
-			boolean completo, boolean volumes, String contextpath, String servernameport)
+			boolean completo, boolean volumes, String contextpath, String servernameport, String usuarioEmissorDocumento)
 			throws Exception {
 		Status status = null;
 		if (uuid != null)
@@ -605,6 +777,7 @@ public class Documento {
 			int f = 0;
 			int garbage = 0;
 			int ansSize = ans.size();
+
 			while (ans.size() > 0) {
 				ExArquivoNumerado an = ans.get(0);
 				ans.remove(0);
@@ -670,19 +843,27 @@ public class Documento {
 						&& an.getArquivo().getMensagem().trim().length() > 0) {
 					sb.append("</td></tr><tr><td>");
 					sb.append("<div style=\"margin:3pt; padding:3pt; border: 1px solid #ccc; border-radius: 5px; background-color:lightgreen;\" class=\"anexo\">");
-					sb.append(an.getArquivo().getMensagem());
+					sb.append(an.getArquivo().getMensagem() + usuarioEmissorDocumento == null ? "" : usuarioEmissorDocumento);
 					sb.append("</div>");
 				}
 				sb.append("</td></tr></table></div>");
 				f++;
 				an.evict();
 				an = null;
+
 				
 				garbage += 1;
 				if (garbage > 20) {
 					garbage = 0;
 					System.gc();
-				}
+				}				 				
+				
+				/*
+				 * if (Prop.get("arquivo.contagem.gc") != null) { garbage += 1; if (garbage >
+				 * Long.valueOf(Prop.get("arquivo.contagem.gc"))) { garbage = 0; System.gc(); }
+				 * }
+				 */			
+			
 			}
 			sb.append("</body></html>");
 			
@@ -721,5 +902,8 @@ public class Documento {
 	}
 
 
+	public byte[] getDocumentoCompletoComEstampa(ExMobil mob) throws Exception {
+		return getDocumento(mob, null, true, true, null, null, null);
+	}
 
 }

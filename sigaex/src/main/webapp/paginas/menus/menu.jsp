@@ -14,14 +14,15 @@
 		<ul class="dropdown-menu">
 			<li><a class="dropdown-item"
 				href="/sigaex/app/expediente/doc/editar">Novo</a></li>
-			<c:if test="${!ehPublicoExterno && f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA:Sistema Integrado de Gestão Administrativa;DOC:Módulo de Documentos;PESQ:Pesquisar')}">
-                <li><a class="dropdown-item"
-                    href="/sigaex/app/expediente/doc/listar?primeiraVez=sim">Pesquisar</a></li>
-            </c:if>
-			<li><a class="dropdown-item" href="/sigaex/app/mesa">Mesa
-					Virtual </a></li>
+			<c:if test="${f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA:Sistema Integrado de Gestão Administrativa;DOC:Módulo de Documentos;PESQ:Pesquisar')}">
+				<li><a class="dropdown-item"
+					href="/sigaex/app/expediente/doc/listar?primeiraVez=sim">Pesquisar</a></li>
+			</c:if>
+			<c:if test="${fx:mesaVirtual()}">
+				<li><a class="dropdown-item" href="/sigaex/app/mesa">Mesa Virtual </a></li>
+			</c:if>
 			
-			<c:if test="${not empty meusDelegados && f:podeDelegarVisualizacao(cadastrante, cadastrante.lotacao)}">
+			<c:if test="${not empty meusDelegados && f:podeDelegarVisualizacao(cadastrante, cadastrante.lotacao) && fx:mesaVirtual()}">
 				<li class="dropdown-submenu"><a href="javascript:void(0);"
 					class="dropdown-item dropdown-toggle">Mesa Virtual Delegada</a>
 					<ul class="dropdown-menu navmenu-large">
@@ -88,6 +89,14 @@
 			</c:catch>
 			<c:catch>
 				<c:if
+					test="${f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA:Sistema Integrado de Gestão Administrativa;DOC:Módulo de Documentos;ATUMARCAS:Atualizar Marcas em Lote')}">
+					<li><a class="dropdown-item"
+						href="/sigaex/app/expediente/mov/atualizar_marcas_lote">Atualizar Marcas
+							em Lote</a></li>
+				</c:if>
+			</c:catch>
+			<c:catch>
+				<c:if
 					test="${f:podeArquivarPermanentePorConfiguracao(titular,lotaTitular)}">
 					<li><a class="dropdown-item"
 						href="/sigaex/app/expediente/mov/arquivar_intermediario_lote">Arquivar
@@ -104,21 +113,22 @@
 			</c:catch>
 			<c:catch>
 				<c:if
-					test="${f:testaCompetencia('atenderPedidoPublicacaoNoDiario',titular,lotaTitular,null)}">
+					test="${f:testaCompetencia('atenderPedidoPublicacao',titular,lotaTitular,null)}">
 					<li><a class="dropdown-item"
 						href="/sigaex/app/expediente/mov/atender_pedido_publicacao">Gerenciar
 							Publicação DJE</a></li>
 				</c:if>
 			</c:catch>
-
+			<!-- 
 			<c:catch>
 				<c:if
-					test="${f:testaCompetencia('gerenciarPublicacaoNoBoletimPorConfiguracao',titular,lotaTitular,null)}">
+					test="${f:testaCompetencia('gerenciarPublicacaoBoletimPorConfiguracao',titular,lotaTitular,null)}">
 					<li><a class="dropdown-item"
 						href="/sigaex/app/configuracao/gerenciar_publicacao_boletim">Definir
 							Publicadores Boletim</a></li>
 				</c:if>
 			</c:catch>
+			 -->
 		</ul></li>
 
 	<c:if

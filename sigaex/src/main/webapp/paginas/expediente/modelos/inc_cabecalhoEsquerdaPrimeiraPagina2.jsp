@@ -10,7 +10,7 @@
 	<col width="84%"></col>
 	<tr bgcolor="#FFFFFF">
 		<td align="left" valign="bottom"><img
-			src="contextpath/imagens/brasao2.png" width="65" height="65" /></td>
+			src="contextpath/imagens/brasao_tjpa.png" width="65" height="65" /></td>
 		<td align="left"></td>
 		<td >
 		<table align="left" width="100%">

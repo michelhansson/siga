@@ -22,9 +22,35 @@
 		<p align="center"><img width="15%" src="/siga/imagens/qr-code-http-siga-jfrj-jus-br-siga-le.png"></img></p>
 	</c:if>
 	<hr/>
-	<p style="font-size: 150%">Recomendamos o navegador Google Chrome para acesso ao SIGA.</p> </br>
+	<p style="font-size: 150%">Esta versão requer o uso do navegador Google Chrome ou Microsoft Edge.</p>
+	<p style="font-size: 150%">Para entrar no SIGADOC use seu login e senha de rede.</p>
 	<a href="https://github.com/projeto-siga/siga" target="_blank" >Sobre o SIGA</a>
 	<hr/>
+
+	<h4>Contatos</h4>
+		<p>Para solucionar dúvidas, problemas ou registrar on-line um pedido de chamado técnico <a href="https://centralservicos.tjpa.jus.br/glpi/" target="_blank">clique aqui</a>.</p>
+		<p><a href="https://centralservicos.tjpa.jus.br/glpi/" target="_blank"><img src="/siga/imagens/LOGO-SDM-no-background.png" style="width: 300px;" /></a></p>
+		&nbsp; (91) 3289-7100
+
+	<hr/>
+	<br/>
+	
+	<div>
+		<span style="font-weight: bold;">Para assinaturas utilizando o certificado digital, será necessário a instalação do complemento Ittru Fusion, em seu navegador.<br/>
+		Para isso, <a href="/siga/arquivos/bluecrystal-chrome-extension-setup.msi">clique aqui</a>.</span>
+	</div>
+	<br/>
+	
+	<div>
+		<span style="font-weight: bold;">Instruções para instalação do Ittru Fusion <a href="/siga/arquivos/Instalando_Ittru_Fusion.pdf" target="_blank">clique aqui</a>.</span>
+	</div>
+	<br/>
+	
+	<div>
+		<span style="font-weight: bold;"><a href="http://www.tjpa.jus.br/PortalExterno/institucional/Secretaria-de-Informatica/582276-video-tutoriais.xhtml">Clique aqui</a>
+		para acessar vídeos tutoriais sobre o Siga Doc</span>
+	</div>
+	<br/>
 	
 </div>
 

@@ -573,6 +573,31 @@
 							</div>
 						</div>
 					</div>
+					
+					<c:if test='${exDocumentoDTO.modelo.idMod == 78 or exDocumentoDTO.modelo.idMod == 20229}'>
+						<div class="row inline">					
+							<div class="col-sm-12">
+						  		<div class="form-group">
+						    		<label>Despacho Padronizado:</label>
+						    		<div class="row">
+						      			<div class="col col-xl-8 col-lg-12">
+									        <select id="tipoDespachoDescricao" name="exDocumentoDTO.tipoDespachoDescricao" onchange="javascript:carregaPreench()" class="form-control siga-select2">
+												<c:forEach items="${tiposDespacho}" var="item">
+													<option value="${item.descTpDespacho}" ${item.descTpDespacho.equals(exDocumentoDTO.tipoDespachoDescricao) ? 'selected' : ''}>
+														${item.descTpDespacho}</option>
+													</c:forEach>
+											</select>
+						      			</div>
+						    		</div>
+						  		</div>
+						    </div>
+							<div class="col-sm-12">
+								<small class="form-text text-muted">Obs: Caso o editor de texto seja preenchido, este campo "despacho padronizado" será desconsiderado.</small>
+		
+							</div>
+						</div>
+					</c:if>
+					
 					<c:if test='${podeTrocarPdfCapturado}'>
 						<div class="row  js-siga-sp-documento-analisa-alteracao">
 							<div class="col-sm-8">
@@ -667,6 +692,13 @@
 												<input type="text" size="30" name="exDocumentoDTO.obsOrgao"
 													maxLength="256" value="${exDocumentoDTO.obsOrgao}"
 													class="form-control mt-4" />
+												<label for="exDocumentoDTO.nmSubscritorExt"><fmt:message
+														key="documento.subscritor" /></label>
+												<input type="hidden" name="campos" value="nmSubscritorExt" />
+												<input type="text" name="exDocumentoDTO.nmSubscritorExt"
+													size="30" maxLength="256"
+													value="${exDocumentoDTO.nmSubscritorExt}"
+													class="form-control" />
 											</c:when>
 										</c:choose>
 									</siga:span>

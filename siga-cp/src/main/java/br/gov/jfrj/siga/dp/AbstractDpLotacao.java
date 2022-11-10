@@ -58,12 +58,17 @@ import br.gov.jfrj.siga.sinc.lib.Desconsiderar;
 
 		@NamedQuery(name = "consultarPorIdDpLotacao", query = "select lot from DpLotacao lot where lot.idLotacao = :idLotacao"),
 		@NamedQuery(name = "consultarPorSiglaDpLotacao", query = "select lot from DpLotacao lot where"
-				+ "      ((lot.siglaLotacao = upper(:siglaLotacao)"
+				+ "      ((upper(lot.siglaLotacao) = upper(:siglaLotacao)"
 				+ "      and (:idOrgaoUsu = null or :idOrgaoUsu = 0L or lot.orgaoUsuario.idOrgaoUsu = :idOrgaoUsu))"
 				+ "      or (:siglaOrgaoLotacao is not null and lot.siglaLotacao = upper(:siglaOrgaoLotacao)))"
 				+ "	     and lot.dataFimLotacao = null"),
+		@NamedQuery(name = "consultarPorSiglaDpLotacaoDesabilitada", query = "select lot from DpLotacao lot where"
+				+ "      upper(lot.siglaLotacao) = upper(:siglaLotacao)"
+				+ "      and (:idOrgaoUsu = null or :idOrgaoUsu = 0 or lot.orgaoUsuario.idOrgaoUsu = :idOrgaoUsu)"
+				+ "	     and lot.dataFimLotacao is not null"
+				+ "	order by lot.dataFimLotacao desc"),
 		@NamedQuery(name = "consultarPorSiglaInclusiveFechadasDpLotacao", query = "select lotacao from DpLotacao lotacao where"
-				+ "      ((lotacao.siglaLotacao = upper(:siglaLotacao)"
+				+ "      ((upper(lotacao.siglaLotacao) = upper(:siglaLotacao)"
 				+ "      and (:idOrgaoUsu = null or :idOrgaoUsu = 0L or lotacao.orgaoUsuario.idOrgaoUsu = :idOrgaoUsu))"
 				+ "      or (:siglaOrgaoLotacao is not null and lotacao.siglaLotacao = upper(:siglaOrgaoLotacao)))"
 				+ "		 and exists (select 1 from DpLotacao lAux where lAux.idLotacaoIni = lotacao.idLotacaoIni"
@@ -111,6 +116,8 @@ import br.gov.jfrj.siga.sinc.lib.Desconsiderar;
 		@NamedNativeQuery(name = "consultarQuantidadeDocumentosPorDpLotacao", query = "SELECT count(1) FROM corporativo.cp_marca marca "
 				+ " left join corporativo.dp_lotacao lotacao on lotacao.ID_LOTACAO = marca.ID_LOTACAO_INI"
 				+ " WHERE id_marcador not in (1,10,32)"
+				//+ " AND (dt_ini_marca IS NULL OR dt_ini_marca < sysdate)"
+				//+ " AND(dt_fim_marca IS NULL OR dt_fim_marca > sysdate)"
 				+ " AND lotacao.id_lotacao_ini = :idLotacao"
 				+ " AND id_tp_marca = :idTipoMarca "),
 		@NamedNativeQuery(name = "consultarQtdeDocCriadosPossePorDpLotacao", query = "SELECT count(1) FROM siga.ex_documento doc "

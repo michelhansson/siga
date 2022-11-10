@@ -478,7 +478,7 @@ var providerIttruP11 = {
 					.dialog(
 							{
 								title : "Assinatura Digital (" + this.nome
-										+ ")",
+										+ ")" ,
 								width : '50%',
 								height : 'auto',
 								resizable : false,
@@ -623,13 +623,15 @@ var providerIttruP11 = {
 // Provider: Assinador com senha
 //
 var providerPassword = {
-	nome : 'Assinatura com Senha',
+//	nome : 'Assinatura com Senha',
+	nome : 'Assinatura TJPA',
+
 	inicializar : function(cont) {
 		try {															
 			var senhaDialog = $(
 					'<div class="modal fade" tabindex="-1" role="dialog" id="senhaDialog"><div class="modal-dialog modal-dialog-centered" role="document"><div class="modal-content">'
 					+ sigaModal.obterCabecalhoPadrao('Identificação')
-					+ '<div class="modal-body"><fieldset><label>Matrícula</label> <br /> <input id="nomeUsuarioSubscritor" type="text" value="' + $('#siglaUsuarioCadastrante').val() + '" class="text ui-widget-content ui-corner-all" onblur="javascript:converteUsuario(this)" /> <label>(modifique caso necessário)</label><br /> <br /> <label>Senha</label><br /> <input type="password" id="senhaUsuarioSubscritor" class="text ui-widget-content ui-corner-all" autocomplete="off" autofocus /></fieldset></div>'
+					+ '<div class="modal-body" style="margin: 0 auto;"><fieldset><label>Login de Rede</label> <br /> <input id="nomeUsuarioSubscritor" type="text" value="' + $('#siglaUsuarioCadastrante').val() + '" class="text ui-widget-content ui-corner-all" onblur="javascript:converteUsuario(this)" disabled readonly/> <label style="display: none;">(modifique caso necessário)</label><br /> <br /> <label>Senha</label><br /> <input type="password" id="senhaUsuarioSubscritor" class="text ui-widget-content ui-corner-all" autocomplete="off" autofocus /></fieldset></div>'
 					+ '<div class="modal-footer"><button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button><button type="button" id="senhaOk" class="btn btn-primary">OK</button></div>'
 					+ '</div></div></div>')
 					.modal();										
@@ -939,7 +941,7 @@ function ExecutarAssinarDocumentos(Copia, Juntar, Tramitar, ExibirNoProtocolo) {
 
 		if (( ($('#podeAssinarPor').val() == "true" && $('#siglaUsuSubscritor').val() != "") && ($('#siglaUsuarioCadastrante').val() != $('#siglaUsuTitular').val()) )
 				&& !$('#siglaUsuCossignatarios').val().includes($('#siglaUsuarioCadastrante').val()) && Copia != 'true') {
-			if (!confirm("DESEJA ASSINAR O DOCUMENTO POR \""+ $('#nomeUsuSubscritor').val() + "\" - \"" + $('#siglaUsuSubscritor').val() +"\" OU POR UM DOS COSIGNATARIOS " + $('#siglaUsuCossignatarios').val() + "?")) {
+			if (!confirm("DESEJA ASSINAR O DOCUMENTO POR \""+ $('#nomeUsuSubscritor').val() + "\" - \"" + $('#siglaUsuSubscritor').val() +"\" OU POR UM DOS COSIGNATARIOS (" + $('#siglaUsuCossignatarios').val() + " )\"")) {
 				gAssinando = false;
 				$(this).dialog('destroy').remove();				
 			}
@@ -1071,9 +1073,9 @@ function ExecutarAssinarDocumentos(Copia, Juntar, Tramitar, ExibirNoProtocolo) {
 
 			process.push(function() {
 				var id = gNome ? gNome.split(':')[1] : null;
-				var DadosDoPost = "id=" + id + "&sigla=" + gNome
+				var DadosDoPost = "id=" + id + "&sigla=" + encodeURIComponent(gNome)
 						
-						+ "&nomeUsuarioSubscritor=" + gLogin
+						+ "&nomeUsuarioSubscritor=" + encodeURIComponent(gLogin)
 						+ "&senhaUsuarioSubscritor=" + encodeURIComponent(gPassword) 
 						+ "&senhaIsPin=" + o.usePin
 						+ "&copia="	+ gAutenticar;

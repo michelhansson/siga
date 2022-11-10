@@ -114,9 +114,11 @@
 									type="hidden" name="ad_url_pdf_0"
 									value="/sigaex/app/arquivo/exibir?arquivo=${doc.codigoCompacto}.pdf" />
 								<input type="hidden" name="ad_url_post_0"
-									value="/sigaex/app/expediente/mov/assinar_gravar" /> <input
+									value="/sigaex/app/expediente/mov/assinar_gravar" /> <!-- TJPA <input
 									type="hidden" name="ad_url_post_password_0"
-									value="/sigaex/app/expediente/mov/assinar_senha_gravar" /> <input
+									value="/sigaex/app/expediente/mov/assinar_senha_gravar" /> --> <input
+									type="hidden" name="ad_url_post_password_0"
+									value="/sigaex/app/expediente/mov/assinar_tjpa_gravar" /> <input									
 									type="hidden" name="ad_id_0" value="${doc.codigoCompacto}" /> <input
 									type="hidden" name="ad_description_0"
 									value="${doc.descrDocumento}" /> <input type="hidden"

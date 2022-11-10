@@ -18,7 +18,7 @@
 				</c:when>
 				<c:otherwise>
 					<td width="100%" align="center" valign="bottom">
-						<img src="contextpath/imagens/brasao2.png" width="65" height="65" />
+						<img src="contextpath/imagens/brasao_tjpa.png" width="65" height="65" />
 					</td>
 				</c:otherwise>
 			</c:choose>

@@ -18,7 +18,7 @@
 	<div class="container-fluid">
 		<div class="card bg-light mb-3">
 			<div class="card-header">
-				<h5>Cadastro de Esp&eacute;cies Documentais</h5>
+				<h5>Cadastro de Esp&eacute;cie Documentais</h5>
 			</div>
 			<div class="card-body">
 				<div class="row">

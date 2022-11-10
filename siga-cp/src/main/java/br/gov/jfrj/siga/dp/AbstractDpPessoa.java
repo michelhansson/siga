@@ -33,6 +33,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -47,7 +49,11 @@ import br.gov.jfrj.siga.cp.model.HistoricoAuditavel;
 import br.gov.jfrj.siga.sinc.lib.Desconsiderar;
 
 @MappedSuperclass
+@NamedNativeQueries({
+	@NamedNativeQuery(name = "consultarDataEHoraDoServidor", query = "SELECT sysdate dt FROM dual", resultSetMapping = "scalar"),
+	@NamedNativeQuery(name = "consultarIPDoServidor", query = "SELECT SYS_CONTEXT ('USERENV', 'IP_ADDRESS') dt FROM dual", resultSetMapping = "scalar")})
 @NamedQueries({
+	    @NamedQuery(name = "consultarPorMatricula", query = "select pes from DpPessoa pes where pes.matricula = :matricula and pes.dataFimPessoa = null"),
 		@NamedQuery(name = "consultarPorIdDpPessoa", query = "select pes from DpPessoa pes where pes.idPessoaIni = :idPessoa"),
 		@NamedQuery(name = "consultarPorIdInicialDpPessoa", query = "select pes from DpPessoa pes where pes.idPessoaIni = :idPessoaIni and pes.dataFimPessoa = null"),
 		@NamedQuery(name = "consultarPorSiglaDpPessoa", query = "select pes from DpPessoa pes where pes.matricula = :matricula and pes.sesbPessoa = :sesb and pes.dataFimPessoa = null"),
@@ -175,7 +181,8 @@ import br.gov.jfrj.siga.sinc.lib.Desconsiderar;
 				+ "   and (u.dtCancelamentoIdentidade = null)"
 				+ "   and (u.dtExpiracaoIdentidade = null or u.dtExpiracaoIdentidade > current_date())"
 				+ "   and (pes.dataFimPessoa = null)"
-				+ "   and (pes.situacaoFuncionalPessoa in ('1', '2', '4', '12', '22', '31', '36'))")
+				+ "   and (pes.situacaoFuncionalPessoa in ('1', '2', '4', '12', '22', '31', '36'))"),
+		@NamedQuery(name = "consultarPorEmailLogin", query = "from DpPessoa pes where pes.emailPessoa = :emailPessoa and pes.dataFimPessoa is null order by pes.idPessoa desc")
 })
 public abstract class AbstractDpPessoa extends DpResponsavel implements
 		Serializable, HistoricoAuditavel {
@@ -317,6 +324,19 @@ public abstract class AbstractDpPessoa extends DpResponsavel implements
 	@Column(name = "NOME_EXIBICAO")
 	private String nomeExibicao;
 
+	@Column(name = "NOME_MAE_PESSOA", length = 150)
+	private String nomeMae;
+
+	@Column(name = "NOME_PAI_PESSOA", length = 150)
+	private String nomePai;
+
+	@Column(name = "COMARCA_PESSOA", length = 150)
+	private String comarca;
+
+	@Column(name = "TITULO_ELEITORAL_PESSOA", length = 50)
+	private String tituloEleitoral;
+	
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ID_PESSOA_INICIAL", insertable = false, updatable = false)
 	@Desconsiderar
@@ -877,6 +897,38 @@ public abstract class AbstractDpPessoa extends DpResponsavel implements
 	 */
 	public String getNomeExibicao() {
 		return nomeExibicao;
+	}
+
+
+	public void setNomeMae(String nomeMae) {
+		this.nomeMae = nomeMae;
+	}
+
+	public String getNomeMae() {
+		return nomeMae;
+	}
+
+	public void setNomePai(String nomePai) {
+		this.nomePai = nomePai;
+	}
+
+	public String getNomePai() {
+		return nomePai;
+	}
+
+	public void setComarca(String comarca) {
+		this.comarca = comarca;
+	}
+
+	public String getComarca() {
+		return comarca;
+	}
+	public void setTituloEleitoral(String tituloEleitoral) {
+		this.tituloEleitoral = tituloEleitoral;
+	}
+
+	public String getTituloEleitoral() {
+		return tituloEleitoral;
 	}
 
 }

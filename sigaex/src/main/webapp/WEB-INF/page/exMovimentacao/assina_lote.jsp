@@ -161,7 +161,7 @@
 									<td width="13%" align="left"><a
 										href="/sigaex/app/expediente/doc/exibir?sigla=${doc.sigla}">${doc.codigo}</a>
 									</td>
-									<td width="5%" align="center">${doc.dtDocDDMMYY}</td>
+									<td width="5%" align="center">${doc.dtDocDDMMYYYY}</td>
 									<td width="10%" align="center">${doc.lotaCadastrante.siglaLotacao}</td>
 									<td width="5%" align="left">${doc.cadastrante.sigla}</td>
 									<td width="15%" align="left">${doc.descrFormaDoc}</td>
@@ -178,9 +178,12 @@
 									value="/sigaex/app/arquivo/exibir?arquivo=${doc.codigoCompacto}.pdf" />
 								<input type="hidden" name="ad_url_post_${doc.idDoc}"
 									value="/sigaex/app/expediente/mov/assinar_gravar" />
-								<input type="hidden"
+								<!-- <input type="hidden"
 									name="ad_url_post_password_${doc.idDoc}"
 									value="/sigaex/app/expediente/mov/assinar_senha_gravar" />
+								-->
+								<input type="hidden" name="ad_url_pdf_${doc.idDoc}"
+									value="/sigaex/app/expediente/mov/assinar_tjpa_gravar" />								
 								
 								<input type="hidden" name="ad_id_${doc.idDoc}"
 									value="${doc.codigoCompacto}" />

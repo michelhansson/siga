@@ -31,7 +31,14 @@
 						</tr>
 						<tr>
 							<td>Para</td>
-							<td>${mov.respString}</td>
+							<c:choose>
+  								<c:when test="${not empty destinatario}">
+									<td>${destinatario}</td>
+  								</c:when>
+						    	<c:otherwise>
+									<td>${mov.respString}</td>
+  								</c:otherwise>
+							</c:choose>
 						</tr>
 						<tr>
 							<td>Data</td>

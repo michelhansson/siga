@@ -154,6 +154,16 @@ public abstract class ExArquivo extends Objeto {
 		String sMensagem = "";
 		if (isAssinadoDigitalmente()) {
 			sMensagem += getAssinantesCompleto();
+			sMensagem += "Use " + getSiglaAssinatura()
+					+ " - para a consulta à autenticidade em " + getQRCode();
+		}
+		return sMensagem;
+	}
+
+	public String getMensagemOLD() {
+		String sMensagem = "";
+		if (isAssinadoDigitalmente()) {
+			sMensagem += getAssinantesCompleto();
 			sMensagem += "Documento Nº: " + getSiglaAssinatura()
 					+ " - consulta à autenticidade em " + getQRCode();
 		}

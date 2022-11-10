@@ -58,6 +58,12 @@ import br.gov.jfrj.siga.model.Objeto;
 				+ " and (dps.dtFimSubst > :dbDatetime or dps.dtFimSubst = null)"
 				+ " and ((dps.titular = null and dps.lotaTitular.idLotacao in (select lot.idLotacao from DpLotacao as lot where lot.idLotacaoIni = :idLotaTitularIni)) or "
 				+ " dps.titular.idPessoa in (select pes.idPessoa from DpPessoa as pes where pes.idPessoaIni = :idTitularIni)) "
+				+ " and dps.dtFimRegistro = null "),
+		@NamedQuery(name = "consultarSubstituicoesDaLotacao", query = "from DpSubstituicao as dps "
+				+ " where (dps.dtIniSubst < sysdate or dps.dtIniSubst = null) "
+				+ " and (dps.dtFimSubst > sysdate or dps.dtFimSubst = null) "
+				+ " and (dps.lotaTitular.idLotacao in (select lot.idLotacao from DpLotacao as lot where lot.idLotacaoIni = :idLotaTitularIni)) "
+				+ " and (dps.substituto.idPessoaIni in (select p.idPessoaIni from DpPessoa as p where p.idPessoaIni = dps.substituto.idPessoaIni and p.dataFimPessoa is null)) "
 				+ " and dps.dtFimRegistro = null ")
 	})
 public abstract class AbstractDpSubstituicao extends Objeto implements

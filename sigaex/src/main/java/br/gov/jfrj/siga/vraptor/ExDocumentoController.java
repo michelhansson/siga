@@ -93,6 +93,7 @@ import br.gov.jfrj.siga.ex.ExNivelAcesso;
 import br.gov.jfrj.siga.ex.ExPapel;
 import br.gov.jfrj.siga.ex.ExPreenchimento;
 import br.gov.jfrj.siga.ex.ExProtocolo;
+import br.gov.jfrj.siga.ex.ExTipoDespacho;
 import br.gov.jfrj.siga.ex.ExTipoDocumento;
 import br.gov.jfrj.siga.ex.ExTipoMobil;
 import br.gov.jfrj.siga.ex.bl.AcessoConsulta;
@@ -102,12 +103,14 @@ import br.gov.jfrj.siga.ex.logic.ExDeveReceberEletronico;
 import br.gov.jfrj.siga.ex.logic.ExPodeAcessarDocumento;
 import br.gov.jfrj.siga.ex.logic.ExPodeArquivarCorrente;
 import br.gov.jfrj.siga.ex.logic.ExPodeCapturarPDF;
+import br.gov.jfrj.siga.ex.logic.ExPodeCriarDocFilho;
 import br.gov.jfrj.siga.ex.logic.ExPodeCriarVia;
 import br.gov.jfrj.siga.ex.logic.ExPodeCriarVolume;
 import br.gov.jfrj.siga.ex.logic.ExPodeDesfazerConcelamentoDeDocumento;
 import br.gov.jfrj.siga.ex.logic.ExPodeDuplicar;
 import br.gov.jfrj.siga.ex.logic.ExPodeEditar;
 import br.gov.jfrj.siga.ex.logic.ExPodeEditarData;
+import br.gov.jfrj.siga.ex.logic.ExPodeEditarDataOrigem;
 import br.gov.jfrj.siga.ex.logic.ExPodeEditarDescricao;
 import br.gov.jfrj.siga.ex.logic.ExPodeExibirQuemTemAcessoAoDocumento;
 import br.gov.jfrj.siga.ex.logic.ExPodeFinalizar;
@@ -526,6 +529,10 @@ public class ExDocumentoController extends ExController {
 
 		buscarDocumentoOuNovo(true, exDocumentoDTO);
 
+		if (exDocumentoDTO.getDoc() != null && exDocumentoDTO.getDoc().getTipoDespachoDescricao() != null) {
+			exDocumentoDTO.setTipoDespachoDescricao(exDocumentoDTO.getDoc().getTipoDespachoDescricao());
+		}
+		
 		if ((isDocNovo) || (param("exDocumentoDTO.docFilho") != null)) {
 
 			if (exDocumentoDTO.getTipoDestinatario() == null)
@@ -574,6 +581,15 @@ public class ExDocumentoController extends ExController {
 						.getExTipoDocumentoSet()) {
 					exDocumentoDTO.setIdTpDoc(tp.getId());
 					break;
+				}
+
+				// Preencher automaticamente o subscritor quando se tratar de
+				// novo documento
+				if (exDocumentoDTO.getIdTpDoc() == ExTipoDocumento.TIPO_DOCUMENTO_INTERNO
+						&& !postback) {
+					DpPessoaSelecao subscritorSel = new DpPessoaSelecao();
+					subscritorSel.buscarPorObjeto(getCadastrante());
+					exDocumentoDTO.setSubscritorSel(subscritorSel);
 				}
 			}
 
@@ -643,11 +659,11 @@ public class ExDocumentoController extends ExController {
 			}
 		}
 		
-
+		/*TJPA  Codigo anterior: 28L*/
 		if (exDocumentoDTO.getTipoDocumento() != null
 				&& exDocumentoDTO.getTipoDocumento().equals("externo")) {
 			exDocumentoDTO.setIdMod(((ExModelo) dao()
-					.consultarAtivoPorIdInicial(ExModelo.class, 28L))
+					.consultarAtivoPorIdInicial(ExModelo.class, 843L))
 					.getIdMod());
 		}
 		carregarBeans(exDocumentoDTO, mobilPaiSel); 
@@ -803,6 +819,12 @@ public class ExDocumentoController extends ExController {
 
 		// result.include("param", exDocumentoDTO.getParamsEntrevista());
 
+		boolean podeEditarOrigem = Ex
+				.getInstance()
+				.getComp()
+				.pode(ExPodeEditarDataOrigem.class, getTitular(), getLotaTitular(),
+						exDocumentoDTO.getModelo());
+
 		boolean podeEditarData = Ex
 				.getInstance()
 				.getComp()
@@ -824,6 +846,8 @@ public class ExDocumentoController extends ExController {
 		}
 		result.include("vars", l);
 
+		result.include("tiposDespacho", this.getTiposDespacho(exDocumentoDTO.getMob()));
+		
 		result.include("par", parFreeMarker);
 		result.include("hasPai", hasPai);
 		result.include("isPaiEletronico", isPaiEletronico);
@@ -839,6 +863,7 @@ public class ExDocumentoController extends ExController {
 		result.include("classificacaoSel", exDocumentoDTO.getClassificacaoSel());
 		result.include("tipoDestinatario", exDocumentoDTO.getTipoDestinatario());
 		result.include("tipoEmitente", exDocumentoDTO.getTipoEmitente());
+		result.include("podeEditarOrigem", podeEditarOrigem);
 		result.include("podeEditarData", podeEditarData);
 		result.include("podeEditarDescricao", podeEditarDescricao);
 		result.include("podeEditarModelo", exDocumentoDTO.getDoc().isFinalizado());
@@ -1390,7 +1415,7 @@ public class ExDocumentoController extends ExController {
 				&& !exDocumentoDto.getMob().isEmTransitoExterno()				
 				&& (mov.getCadastrante() == null || !mov.getCadastrante().equivale(getTitular()))
 				&& !exDocumentoDto.getMob().isJuntado()) {
-				recebimentoPendente = true;		
+				recebimentoPendente = Prop.getBool("questiona.recebimento");	
 			}
 		} 		
 
@@ -1467,6 +1492,43 @@ public class ExDocumentoController extends ExController {
 	public void exibeResumoProcesso(final String sigla, final boolean podeExibir)
 			throws Exception {
 		exibe(false, sigla, null, null, null, false);
+	}
+
+	private void verificaDocumento(final ExDocumento doc) {
+		if ((doc.getSubscritor() == null)
+				&& !doc.isExternoCapturado()
+				&& !doc.isExterno()
+				&& ((doc.isProcesso() && doc.isEletronico()) || !doc
+						.isProcesso())) {
+			throw new AplicacaoException(
+					"É necessário definir um subscritor para o documento.");
+		}
+
+		if (doc.getDestinatario() == null
+				&& doc.getLotaDestinatario() == null
+				&& (doc.getNmDestinatario() == null || doc.getNmDestinatario()
+						.trim().equals(""))
+				&& doc.getOrgaoExternoDestinatario() == null
+				&& (doc.getNmOrgaoExterno() == null || doc.getNmOrgaoExterno()
+						.trim().equals(""))) {
+			final CpSituacaoDeConfiguracaoEnum idSit = Ex
+					.getInstance()
+					.getConf()
+					.buscaSituacao(doc.getExModelo(), getTitular(),
+							getLotaTitular(),
+							ExTipoDeConfiguracao.DESTINATARIO);
+			if (idSit == CpSituacaoDeConfiguracaoEnum.OBRIGATORIO) {
+				throw new AplicacaoException("Para documentos do modelo "
+						+ doc.getExModelo().getNmMod()
+						+ ", é necessário definir um destinatário");
+			}
+		}
+
+		if (doc.getExClassificacao() == null) {
+			throw new AplicacaoException(
+					"É necessário informar a classificação documental.");
+		}
+
 	}
 
 	private void buscarDocumentoOuNovo(final boolean fVerificarAcesso,
@@ -1600,6 +1662,24 @@ public class ExDocumentoController extends ExController {
 				exDocumentoDTO.setDoc(new ExDocumento());
 			}
 			
+			/*TJPA
+			/*Verificar se a lotação de destino possui pessoas lotadas ou substitutos /* (17794) Grupo de Trabalho da COJRRAAL/SEPLAN */
+			if (exDocumentoDTO.getLotacaoDestinatarioSel().getObjeto() != null && exDocumentoDTO.getLotacaoDestinatarioSel().getObjeto().getDpPessoaLotadosSet() != null
+					&& CpDao.getInstance().consultarSubstitutosDaLotacao(exDocumentoDTO.getLotacaoDestinatarioSel().getObjeto()).isEmpty() /* Ninguém substitui a lotação */
+					&& exDocumentoDTO.getLotacaoDestinatarioSel().getObjeto().getDpPessoaLotadosSet().isEmpty()
+					&& exDocumentoDTO.getLotacaoDestinatarioSel().getObjeto().getIdInicial() != 17794) {
+				result.include(SigaModal.ALERTA, SigaModal.mensagem("Não existem usuários lotados nem substitutos na unidade informada: "+ exDocumentoDTO.getLotacaoDestinatarioSel().getObjeto().getDescricao().trim()+"."));
+				result.forwardTo(this).edita(exDocumentoDTO, null, vars,
+						exDocumentoDTO.getMobilPaiSel(),
+						exDocumentoDTO.isCriandoAnexo(),
+						exDocumentoDTO.getAutuando(),
+						exDocumentoDTO.getIdMobilAutuado(),
+						exDocumentoDTO.getCriandoSubprocesso(),
+						null, null, null, null);
+
+				return;
+			}
+
 			DpPessoa subscritor = exDocumentoDTO.getSubscritorSel().getObjeto();
 			
 			if (subscritor != null && !new ExPodeRestringirCossignatarioSubscritor(getTitular(), getLotaTitular(), subscritor, subscritor.getLotacao(),
@@ -1635,7 +1715,7 @@ public class ExDocumentoController extends ExController {
 			}
 
 			lerForm(exDocumentoDTO, vars);
-
+			
 			if ((exDocumentoDTO.getIdTpDoc() == ExTipoDocumento.TIPO_DOCUMENTO_INTERNO_CAPTURADO || exDocumentoDTO
 					.getIdTpDoc() == ExTipoDocumento.TIPO_DOCUMENTO_EXTERNO_CAPTURADO)
 					&& exDocumentoDTO.getDoc().getIdDoc() == null
@@ -1751,7 +1831,7 @@ public class ExDocumentoController extends ExController {
 								"Arquivo vazio não pode ser anexado.");
 					}
 					numBytes = baArquivo.length;
-					if (numBytes > 10 * 1024 * 1024) {
+					if (numBytes > 21 * 1024 * 1024) {
 						throw new AplicacaoException(
 								"Não é permitida a anexação de arquivos com mais de 10MB.");
 					}
@@ -2471,6 +2551,10 @@ public class ExDocumentoController extends ExController {
 
 		doc.setNmDestinatario(exDocumentoDTO.getNmDestinatario());
 
+		if (exDocumentoDTO.getTipoDespachoDescricao() != null || !"".equals(exDocumentoDTO.getTipoDespachoDescricao())) {
+			doc.setTipoDespachoDescricao(exDocumentoDTO.getTipoDespachoDescricao());
+		}
+		
 		doc.setExModelo(null);
 		if (exDocumentoDTO.getIdMod() != 0) {
 			ExModelo modelo = dao().consultar(exDocumentoDTO.getIdMod(),
@@ -2520,6 +2604,7 @@ public class ExDocumentoController extends ExController {
 		if (doc.getLotaCadastrante() == null) {
 			doc.setLotaCadastrante(doc.getCadastrante().getLotacao());
 		}
+		
 		if (exDocumentoDTO.getSubscritorSel().getId() != null) {
 			doc.setSubscritor(daoPes(exDocumentoDTO.getSubscritorSel().getId()));
 			doc.setLotaSubscritor(doc.getSubscritor().getLotacao());
@@ -2996,5 +3081,20 @@ public class ExDocumentoController extends ExController {
 	@Get("app/validar-assinatura")
 	public void aDesfazerCancelamentoDocumento(final Long pessoa, final String sigla) {
 		result.redirectTo(Prop.get("/siga.base.url") + "/siga/permalink/" + sigla);
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<ExTipoDespacho> getTiposDespacho(final ExMobil mob) {
+		final List<ExTipoDespacho> tiposDespacho = new ArrayList<ExTipoDespacho>();
+		tiposDespacho.add(new ExTipoDespacho(0L, "[Nenhum]", "S"));
+		tiposDespacho.addAll(dao().consultarAtivos());
+		/*
+		 * tiposDespacho .add(new ExTipoDespacho(-1, "[Outros] (texto curto)", "S"));
+		 */
+		if (mob != null
+				&& Ex.getInstance().getComp().pode(ExPodeCriarDocFilho.class, getTitular(), getLotaTitular(), mob))
+			tiposDespacho.add(new ExTipoDespacho(-2, "[Outros] (texto longo)", "S"));
+		
+		return tiposDespacho;
 	}
 }

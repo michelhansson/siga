@@ -7,7 +7,7 @@
 <table width="100%" align="left">
 	<tr >
 		<td align="left" valign="bottom" width="15%"><img
-			src="contextpath/imagens/brasao2.png" width="82" height="82" /></td>
+			src="contextpath/imagens/brasao_tjpa.png" width="82" height="82" /></td>
 		<td width="85%">
 		<table align="left" width="100%">
 			<tr>

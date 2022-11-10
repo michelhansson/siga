@@ -70,9 +70,9 @@ public class DocumentosSiglaArquivoProduzirGet implements IDocumentosSiglaArquiv
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		if ("application/pdf".equals(req.contenttype)) {
 			resp.contenttype = "application/pdf";
-			Documento.getDocumento(baos, null, mob, mov, req.completo, req.estampa, req.volumes, null, null);
+			Documento.getDocumento(baos, null, mob, mov, req.completo, req.estampa, req.volumes, null, null, null);
 		} else {
-			Documento.getDocumentoHTML(baos, null, mob, mov, req.completo, req.volumes, contextpath, servernameport);
+			Documento.getDocumentoHTML(baos, null, mob, mov, req.completo, req.volumes, contextpath, servernameport, null);
 		}
 		byte[] ab;
 		ab = baos.toByteArray();

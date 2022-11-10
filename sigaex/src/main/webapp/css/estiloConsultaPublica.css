@@ -1,0 +1,189 @@
+a:link {
+	color: #888;
+	text-decoration: none;
+}
+
+a:visited {
+	
+}
+
+a:active {
+	
+}
+
+a:hover {
+	
+}
+
+a:focus {
+	
+}
+
+.descDoc {
+	font-size: 12px;
+}
+
+h4.pesquisar {
+	margin: 10px 18px;
+}
+
+.dialogConteudo {
+	color: #666;
+	text-align: center;
+}
+
+.dialogConteudo img {
+	margin: 0 0 8px 0;
+}
+
+.box {
+	background: #FFF;
+	border: 1px solid #CCC;
+	border-radius: 4px;
+	margin: 4px 16px;
+	overflow: hidden;
+	padding: 0;
+}
+
+.boxCont {
+	background: #FFF;
+	border: 1px solid #CCC;
+	border-radius: 4px;
+	margin: 4px 16px;
+	padding: 16px;
+}
+
+.tabela {
+	padding: 0 16px;
+}
+
+.tabela h4 {
+	color: #666;
+}
+
+.tabela table {
+	/*cursor: pointer;*/
+	margin: 8px 0 8px;
+	width: 100%;
+}
+
+.tabela table thead {
+	
+}
+
+.tabela table thead tr {
+	background: linear-gradient(to bottom, #EEE, #CCC);
+	color: #666;
+}
+
+.tabela table thead tr th {
+	border: 1px solid #DDD;
+	padding: 8px;
+}
+
+.tabela table tbody {
+	
+}
+
+.tabela table tbody tr {
+	
+}
+
+.tabela table tbody tr:hover {
+	background: #FFC;
+}
+
+.tabela table tbody tr td {
+	border: 1px solid #DDD;
+	padding: 4px;
+	font-size: 12px;
+}
+
+.tituloResultadoDoc {
+	padding: 16px;
+}
+
+.tipoDoc {
+	background: url('../imagens/bgDoc.png') no-repeat;
+	color: #BBB;
+	display: inline-block;
+	height: 52px;
+	margin: 0 8px 0 0;
+	padding: 8px 4px;
+	text-align: center;
+	width: 48px;
+	vertical-align: top;
+}
+
+.cabecDoc {
+	display: inline-block;
+	width: 90%;
+}
+
+.cabecDoc h2 {
+	color: #07B;
+	font-size: 120%;
+	margin-bottom: 1px;
+}
+
+.cabecDoc h3 {
+	color: #666;
+	font-size: 100%;
+	font-weight: normal;
+}
+
+.cabecDoc h4 {
+	color: #666;
+	display: inline-block;
+	font-size: 12px;
+	font-weight: normal;
+	/*margin: 8px 32px 0 0;*/
+	padding: 4px 0 4px 0;
+}
+
+.cabecDoc h4.data {
+	background: url('../imagens/bgIconData.png') no-repeat;
+	color: #E44;
+	padding: 4px 0 4px 22px;
+}
+
+.cabecDoc h4.ano_emissao span {
+	color: #2A2;
+}
+
+.rodapeBox {
+	background: #EEE;
+	border-top: 1px solid #CCC;
+	box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1) inset;
+	padding: 8px 0;
+}
+
+.rodapeBox a {
+	background: url('../imagens/bgIconVisualizarSprit.png') #07B no-repeat
+		12px 12px;
+	box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4) inset;
+	padding: 8px 12px 8px 36px;
+	color: #FFF;
+}
+
+.rodapeBox a:hover {
+	background: url('../imagens/bgIconVisualizarSprit.png') #07B no-repeat
+		12px 12px;
+	box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4) inset;
+	color: #FFF;
+}
+
+.caixaEntrada {
+	font-size: 16px;
+	padding: 4px;
+}
+
+#btnConsultar {
+	background: linear-gradient(to bottom, #057, #024);
+	border: 1px solid #057;
+	border-radius: 4px;
+	box-shadow: 0 1px 1px 0 rgba(255, 255, 255, 0.4) inset, 0 -3px 6px 0
+		rgba(0, 0, 0, 0.2) inset, 0 0 6px 0 rgba(0, 0, 0, 0.6);
+	color: #FFF;
+	padding: 6px 20px;
+}

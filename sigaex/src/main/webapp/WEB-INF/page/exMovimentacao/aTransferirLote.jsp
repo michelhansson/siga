@@ -162,7 +162,7 @@
 										<th colspan="3">Documento</th>
 										<th colspan="2">Última Movimentação</th>
 										<th rowspan="2">Descrição</th>
-										<th rowspan="2" class="col-5 d-none">Despacho <c:if
+										<th rowspan="2" class="col-5 d-none">Despacho Padronizado<c:if
 												test="${secao==0}" />
 										</th>
 									</tr>
@@ -202,7 +202,7 @@
 													</c:otherwise>
 												</c:choose></td>
 											<c:if test="${not documento.geral}">
-												<td class="text-center">${documento.doc.dtDocDDMMYY}</td>
+												<td class="text-center">${documento.doc.dtDocDDMMYYYY}</td>
 												<td class="text-center"><siga:selecionado
 														isVraptor="true"
 														sigla="${documento.doc.lotaSubscritor.sigla}"
@@ -211,7 +211,7 @@
 														isVraptor="true"
 														sigla="${documento.doc.subscritor.iniciais}"
 														descricao="${documento.doc.subscritor.descricao}" /></td>
-												<td class="text-center">${documento.ultimaMovimentacaoNaoCancelada.dtMovDDMMYY}</td>
+												<td class="text-center">${documento.ultimaMovimentacaoNaoCancelada.dtMovDDMMYYYY}</td>
 												<td class="text-center"><siga:selecionado
 														isVraptor="true"
 														sigla="${documento.ultimaMovimentacaoNaoCancelada.resp.iniciais}"
@@ -219,7 +219,7 @@
 												</td>
 											</c:if>
 											<c:if test="${documento.geral}">
-												<td class="text-center">${documento.doc.dtDocDDMMYY}</td>
+												<td class="text-center">${documento.doc.dtDocDDMMYYYY}</td>
 												<td class="text-center"><siga:selecionado
 														isVraptor="true"
 														sigla="${documento.doc.subscritor.iniciais}"

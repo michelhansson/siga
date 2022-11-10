@@ -20,11 +20,19 @@
 					<tr>
 						<tr>
 							<td>De:</td>
-							<td>${lotaTitular.descricao}-${cadastrante.descricao}</td>
+							<td>${lotaTitular.descricao} -
+								${cadastrante.descricao}</td>
 						</tr>
 						<tr>
 							<td>Para:</td>
-							<td>${mov.respString}</td>
+							<c:choose>
+  								<c:when test="${not empty destinatario}">
+									<td>${destinatario}</td>
+  								</c:when>
+						    	<c:otherwise>
+									<td>${mov.respString}</td>
+  								</c:otherwise>
+							</c:choose>
 						</tr>
 						<tr>
 							<td>Data:</td>
@@ -81,7 +89,7 @@
 								<td align="right"><a
 									href="${pageContext.request.contextPath}/app/expediente/doc/exibir?sigla=${documento[1].exMobil.sigla}">${documento[1].exMobil.codigo}</a>
 									<c:if test="${not documento[1].exMobil.geral}">
-										<td align="center">${documento[0].dtDocDDMMYY}</td>
+										<td align="center">${documento[0].dtDocDDMMYYYY}</td>
 										<td align="center"><siga:selecionado
 												sigla="${documento[0].lotaSubscritor.sigla}"
 												descricao="${documento[0].lotaSubscritor.descricao}" /></td>
@@ -102,7 +110,7 @@
 												sigla="${documento[1].resp.iniciais}"
 												descricao="${documento[1].resp.descricao}" /></td>
 									</c:if> <c:if test="${documento[1].exMobil.geral}">
-										<td align="center">${documento[0].dtDocDDMMYY}</td>
+										<td align="center">${documento[0].dtDocDDMMYYYY}</td>
 										<td align="center"><siga:selecionado
 												sigla="${documento[0].subscritor.iniciais}"
 												descricao="${documento[0].subscritor.descricao}" /></td>

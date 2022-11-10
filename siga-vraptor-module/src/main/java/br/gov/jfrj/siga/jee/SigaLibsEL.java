@@ -469,4 +469,9 @@ public class SigaLibsEL {
 	public static boolean podeUtilizarSegundoFatorPin(final DpPessoa cadastrante,final DpLotacao lotacaoCadastrante) throws Exception {
 		return Cp.getInstance().getConf().podePorConfiguracao(cadastrante, lotacaoCadastrante, CpTipoDeConfiguracao.SEGUNDO_FATOR_PIN);
 	}
+
+	public static Boolean mesaVirtual() {
+		return Boolean.valueOf(System.getProperty("mesa.virtual").trim());
+	}
+
 }

@@ -232,6 +232,8 @@ public class ExDocumentoDTO {
 	
 	private List<ExNivelAcesso> listaNivelAcesso;
 
+	private String tipoDespachoDescricao;
+
 	public ExDocumentoDTO() {
 		classificacaoSel = new ExClassificacaoSelecao();
 		destinatarioSel = new DpPessoaSelecao();
@@ -251,7 +253,8 @@ public class ExDocumentoDTO {
 		ultMovLotaCadastranteSel = new DpLotacaoSelecao();
 		paramsEntrevista = new TreeMap<String, String>();
 		cpOrgaoSel = new CpOrgaoSelecao();
-		setEletronico(0);
+		setEletronico(1);
+		eletronicoFixo = Boolean.TRUE;
 		results = new LinkedList<ExDocumento>();
 	}
 	
@@ -1032,4 +1035,11 @@ public class ExDocumentoDTO {
 		return dtPrazoAssinaturaString;
 	}
 
+	public String getTipoDespachoDescricao() {
+		return tipoDespachoDescricao;
+	}
+
+	public void setTipoDespachoDescricao(String tipoDespachoDescricao) {
+		this.tipoDespachoDescricao = tipoDespachoDescricao;
+	}
 }

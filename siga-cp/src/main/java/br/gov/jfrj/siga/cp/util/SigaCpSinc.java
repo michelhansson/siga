@@ -693,6 +693,10 @@ public class SigaCpSinc {
 			// inferir tipo de lotacao para a SJRJ se vier nulo no XML
 			inferirTipoLotacaoSJRJ(lotacao);
 		}
+		if (lotacao.getIsExternaLotacao() == null)
+			lotacao.setIsExternaLotacao(new Integer(0));
+		if (lotacao.getIsSuspensa() == null)
+			lotacao.setIsSuspensa(new Integer(0));
 		return lotacao;
 	}
 
@@ -739,6 +743,11 @@ public class SigaCpSinc {
 			else
 				pessoa.setDataNascimento(dtNascimento);
 
+			pessoa.setNomeMae(parseStr(parser, "nomeMae"));
+			pessoa.setNomePai(parseStr(parser, "nomePai"));
+			pessoa.setComarca(parseStr(parser, "comarca"));
+			pessoa.setTituloEleitoral(parseStr(parser, "tituloEleitor"));
+			
 			pessoa.setEmailPessoa(parseStr(parser, "email"));
 			if (pessoa.getEmailPessoaAtual() != null)
 				pessoa.setEmailPessoa(pessoa.getEmailPessoaAtual().toLowerCase());
@@ -862,7 +871,7 @@ public class SigaCpSinc {
 			o.setIdExterna(parseStr(parser, "lotacao"));
 			papel.setDpLotacao(o);
 		}
-		papel.setHisAtivo(1);
+		//papel.setHisAtivo(1);
 		return papel;
 	}
 

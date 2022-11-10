@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="relProtocoloExterno" pageWidth="283" pageHeight="198" orientation="Landscape" columnWidth="283" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" whenResourceMissingType="Empty" uuid="12135184-ae14-4850-8db5-09722af59f38">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.scriptlethandling" value="0"/>
+	<import value="net.sf.jasperreports.engine.*"/>
+	<import value="java.util.*"/>
+	<import value="net.sf.jasperreports.engine.data.*"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="origem" class="java.lang.String"/>
+	<field name="numeroOriginal" class="java.lang.String"/>
+	<field name="dataOriginal" class="java.lang.String"/>
+	<field name="subscritorOriginal" class="java.lang.String"/>
+	<field name="numeroProtocolo" class="java.lang.String"/>
+	<field name="dataProtocolo" class="java.lang.String"/>
+	<background>
+		<band/>
+	</background>
+	<detail>
+		<band height="180">
+			<staticText>
+				<reportElement key="" mode="Opaque" x="13" y="55" width="73" height="16" uuid="d73f6e15-adcd-49d4-8dea-e94f2fedbb2b"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Protocolo: ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="31" width="283" height="21" uuid="fe5bd64b-360f-4486-9344-1ecb1c0008d9"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="16"/>
+				</textElement>
+				<text><![CDATA[PROTOCOLO ADMINISTRATIVO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="13" width="283" height="13" uuid="26c3de88-9ad5-4731-bb34-2485973f0251"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TRIBUNAL DE JUSTIÇA DO ESTADO DO PARÁ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="0" width="283" height="13" uuid="b413b8a4-c498-4208-a9e0-440ed530c4d2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PODER JUDICIÁRIO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="13" y="77" width="73" height="16" uuid="bf97a4e1-becf-437d-bd1b-905853f9bec6"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Data:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="86" y="52" width="190" height="21" uuid="08a87d73-a7de-48d6-ac97-c53999a208eb"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="16"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numeroProtocolo}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="14" y="120" width="269" height="13" uuid="94237c99-5d7b-4757-ada5-9dc2fb2b87ef"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{origem}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="14" y="146" width="269" height="13" uuid="7f088b36-f847-4e49-81d9-031559348c24"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Subscritor: " + $F{subscritorOriginal}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="14" y="133" width="269" height="13" uuid="69414dd4-ed77-406e-9370-0379c19508ff"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Número: " + $F{numeroOriginal} + "     Data: " + $F{dataOriginal}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="11" y="97" width="265" height="1" uuid="a8fb1697-0cca-4737-b540-72d37e7206fe"/>
+			</line>
+			<staticText>
+				<reportElement x="0" y="167" width="283" height="13" uuid="3d2fbe23-eab7-4371-a3e0-edb83b629400"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[http://apps.tjpa.jus.br/sigaex/consultaPublica]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="86" y="73" width="190" height="21" uuid="8a4583b7-f3cc-4e0c-b33c-00375be9734f"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="16"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dataProtocolo}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="100" width="283" height="21" uuid="02ab0f98-8d2a-49f1-b7dc-9310a7b086d2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="16"/>
+				</textElement>
+				<text><![CDATA[ORIGEM]]></text>
+			</staticText>
+		</band>
+	</detail>
+</jasperReport>

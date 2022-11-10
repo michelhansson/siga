@@ -97,12 +97,12 @@ public class RelConsultaDocEntreDatas extends RelatorioTemplate {
 	}
 	
 	private Date stringToDate(String texto) throws ParseException {
-		DateFormat formatador = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+		DateFormat formatador = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		return formatador.parse(texto);
 	}
 	
 	private String dateToString(Date data) {
-		DateFormat formatador = new SimpleDateFormat("dd/MM/yy");
+		DateFormat formatador = new SimpleDateFormat("dd/MM/yyyy");
 		return formatador.format(data);
 	}
 

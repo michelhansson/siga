@@ -240,7 +240,7 @@
 				<td width="48%">
 				<table width="100%" cellpadding="1" cellspacing="0">
 					<tr>
-						<td width="30%"><img src="contextpath/imagens/brasao2.png"
+						<td width="30%"><img src="contextpath/imagens/brasao_tjpa.png"
 							width="65" height="65" /></td>
 						<td width="70%"><c:import
 							url="/paginas/expediente/modelos/inc_cabecalhoEsquerda2.jsp" /></td>

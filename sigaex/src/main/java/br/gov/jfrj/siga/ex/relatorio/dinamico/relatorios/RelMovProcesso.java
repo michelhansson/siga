@@ -79,7 +79,7 @@ public class RelMovProcesso extends RelatorioTemplate {
 			acronimos += "|" + s;
 		}
 
-		final Pattern p2 = Pattern.compile("^TMP-?([0-9]{1,7})");
+		final Pattern p2 = Pattern.compile("^TMP-?([0-9]{1,9})");
 		final Pattern p1 = Pattern
 				.compile("^("
 						+ acronimos

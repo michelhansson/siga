@@ -90,6 +90,11 @@ public class ExMovimentacaoVO extends ExVO {
 	String tempoRelativo;
 	boolean podeExibirNoSigale;
 	private String subscritor;
+	
+	String dtRegMovDDMMYYYYHHMMSS;
+	String dtRegMovDDMMYYYY;
+
+	private String dataMovimento;
 
 	public ExMobilVO getMobVO() {
 		return mobVO;
@@ -114,6 +119,11 @@ public class ExMovimentacaoVO extends ExVO {
 		this.cancelada = mov.getExMovimentacaoCanceladora() != null;
 		this.lotaCadastranteSigla = mov.getLotaCadastrante() != null ? mov.getLotaCadastrante().getSigla() : null;
 		this.exTipoMovimentacaoSigla = mov.getExTipoMovimentacao().getDescr();
+
+		this.dtRegMovDDMMYYYYHHMMSS = mov.getDtRegMovDDMMYYYYHHMMSS();
+		this.dtRegMovDDMMYYYY = mov.getDtRegMovDDMMYYYY();
+
+		this.dataMovimento = mov.getDtMovDDMMYYYY();
 
 		if (mov.getLotaCadastrante() != null)
 			parte.put("lotaCadastrante", new ExParteVO(mov.getLotaCadastrante()));
@@ -498,37 +508,68 @@ public class ExMovimentacaoVO extends ExVO {
 				descricao = mov.getExMobil().getSigla();
 			}
 		}
-		
-		if(exTipoMovimentacao == ExTipoDeMovimentacao.GERAR_PROTOCOLO) {
-			if (!mov.isCancelada())
-				addAcao(AcaoVO.builder().nome("Gerar Protocolo").nameSpace("/app/expediente/doc").acao("gerarProtocolo").params("sigla", mov.getExMobil().getSigla()).params("popup", "true")
-						.exp(new CpPodeSempre()).build());
-		}
 
-		if (exTipoMovimentacao == ExTipoDeMovimentacao.ARQUIVAMENTO_CORRENTE
-				|| exTipoMovimentacao == ExTipoDeMovimentacao.ARQUIVAMENTO_INTERMEDIARIO
-				|| exTipoMovimentacao == ExTipoDeMovimentacao.ARQUIVAMENTO_PERMANENTE) {
-			if (!mov.isCancelada())
-				addAcao(AcaoVO.builder().nome("Protocolo").nameSpace("/app/expediente/mov").acao("protocolo_arq_transf").params("sigla", (mov.getCadastrante() == null ? "null" : mov.getCadastrante().getSigla()))
-						.params("dt", mov.getDtRegMovDDMMYYYYHHMMSS()).params("popup", "true").params("isTransf", "false")
-						.exp(new CpPodeSempre()).build());
-		}
-
-		if (exTipoMovimentacao == ExTipoDeMovimentacao.DESPACHO_TRANSFERENCIA
-				|| exTipoMovimentacao == ExTipoDeMovimentacao.DESPACHO_INTERNO_TRANSFERENCIA
-				|| exTipoMovimentacao == ExTipoDeMovimentacao.DESPACHO_TRANSFERENCIA_EXTERNA
-				|| exTipoMovimentacao == ExTipoDeMovimentacao.TRANSFERENCIA || exTipoMovimentacao == ExTipoDeMovimentacao.TRANSFERENCIA_EXTERNA
-				|| exTipoMovimentacao == ExTipoDeMovimentacao.RECEBIMENTO_TRANSITORIO) {
-			String pre = null;
-			if (mov.getDtFimMovDDMMYY() != "") {
-				pre = "Devolver até " + mov.getDtFimMovDDMMYY() + " | ";
+		// TJPA
+		if (mov.getExDocumento().getExModelo() != null && mov.getExDocumento().getExModelo().getNmMod().equals("Documento Externo")
+				&& (cadastrante != null) &&  (cadastrante.getLotacao().getDescricao().toLowerCase().contains("proto")
+						|| cadastrante.getLotacao().getDescricao().toLowerCase()
+								.contains("apoio tecnico juridico da presidencia")
+						|| cadastrante.getLotacao().getDescricao().toLowerCase().contains("servico de licitacoes")
+						|| ((cadastrante.getFuncaoConfianca() != null && cadastrante.getFuncaoConfianca().getDescricao().toLowerCase().contains("protocolo")) || cadastrante.getFuncaoConfianca() == null))) {
+			if (exTipoMovimentacao == ExTipoDeMovimentacao.CRIACAO || exTipoMovimentacao == ExTipoDeMovimentacao.GERAR_PROTOCOLO) {
+				String pre = null;
+				if (mov.getDtFimMovDDMMYYYY() != "") {
+					pre = "Devolver até " + mov.getDtFimMovDDMMYYYY() + " | ";
+				}
+				if (!mov.isCancelada())
+					addAcao(AcaoVO.builder().nome("Protocolo").nameSpace("/app/expediente/mov").acao("protocolo_arq_transf").params("sigla", (mov.getCadastrante() == null ? "null" : mov.getCadastrante().getSigla()))
+							.params("dt", mov.getDtRegMovDDMMYYYYHHMMSS()).params("popup", "true").params("isTransf", "false")
+							.exp(new CpPodeSempre()).build());
+					addAcao(AcaoVO.builder().nome("Etiqueta").nameSpace("/app/expediente/mov").acao("protocolo_anexo_externo").params("sigla", (mov.getCadastrante() == null ? "null" : mov.getCadastrante().getSigla()))
+							.params("dt", mov.getDtRegMovDDMMYYYYHHMMSS()).params("popup", "true").params("isTransf", "false")
+							.exp(new CpPodeSempre()).build());
 			}
-			if (!mov.isCancelada())
-				addAcao(AcaoVO.builder().nome("Protocolo").nameSpace("/app/expediente/mov").acao("protocolo_arq_transf").params("sigla", (mov.getCadastrante() == null ? "null" : mov.getCadastrante().getSigla()))
-						.params("dt", mov.getDtRegMovDDMMYYYYHHMMSS()).params("popup", "true").params("isTransf", "false").pre(pre)
-						.exp(new CpPodeSempre()).build());
-		}
 
+		}	
+		
+		//if(exTipoMovimentacao == ExTipoDeMovimentacao.GERAR_PROTOCOLO) {
+		//	if (!mov.isCancelada())
+		//		addAcao(AcaoVO.builder().nome("Gerar Protocolo").nameSpace("/app/expediente/doc").acao("gerarProtocolo").params("sigla", mov.getExMobil().getSigla()).params("popup", "true")
+		//				.exp(new CpPodeSempre()).build());
+		//}
+
+		// Retirado em 03/11/2022 - Mário Tavares e Michel Hansson
+
+		/*
+		 * if (exTipoMovimentacao == ExTipoDeMovimentacao.ARQUIVAMENTO_CORRENTE ||
+		 * exTipoMovimentacao == ExTipoDeMovimentacao.ARQUIVAMENTO_INTERMEDIARIO ||
+		 * exTipoMovimentacao == ExTipoDeMovimentacao.ARQUIVAMENTO_PERMANENTE) { if
+		 * (!mov.isCancelada())
+		 * addAcao(AcaoVO.builder().nome("Protocolo").nameSpace("/app/expediente/mov").
+		 * acao("protocolo_arq_transf").params("sigla", (mov.getCadastrante() == null ?
+		 * "null" : mov.getCadastrante().getSigla())) .params("dt",
+		 * mov.getDtRegMovDDMMYYYYHHMMSS()).params("popup", "true").params("isTransf",
+		 * "false") .exp(new CpPodeSempre()).build()); }
+		 */
+		
+		// Retirado em 03/11/2022 - Mário Tavares e Michel Hansson
+		
+		/*
+		 * if (exTipoMovimentacao == ExTipoDeMovimentacao.DESPACHO_TRANSFERENCIA ||
+		 * exTipoMovimentacao == ExTipoDeMovimentacao.DESPACHO_INTERNO_TRANSFERENCIA ||
+		 * exTipoMovimentacao == ExTipoDeMovimentacao.DESPACHO_TRANSFERENCIA_EXTERNA ||
+		 * exTipoMovimentacao == ExTipoDeMovimentacao.TRANSFERENCIA ||
+		 * exTipoMovimentacao == ExTipoDeMovimentacao.TRANSFERENCIA_EXTERNA ||
+		 * exTipoMovimentacao == ExTipoDeMovimentacao.RECEBIMENTO_TRANSITORIO) { String
+		 * pre = null; if (mov.getDtFimMovDDMMYY() != "") { pre = "Devolver até " +
+		 * mov.getDtFimMovDDMMYY() + " | "; } if (!mov.isCancelada())
+		 * addAcao(AcaoVO.builder().nome("Protocolo").nameSpace("/app/expediente/mov").
+		 * acao("protocolo_arq_transf").params("sigla", (mov.getCadastrante() == null ?
+		 * "null" : mov.getCadastrante().getSigla())) .params("dt",
+		 * mov.getDtRegMovDDMMYYYYHHMMSS()).params("popup", "true").params("isTransf",
+		 * "false").pre(pre) .exp(new CpPodeSempre()).build()); }
+		 */
+		
 		if (exTipoMovimentacao == ExTipoDeMovimentacao.AGENDAMENTO_DE_PUBLICACAO) {
 			addAcao(AcaoVO.builder().nome(mov.getNmArqMov()).nameSpace("/app/arquivo").acao("download").params("arquivo", mov.getReferenciaZIP())
 					.params("dt", mov.getDtRegMovDDMMYYYYHHMMSS())
@@ -877,5 +918,17 @@ public class ExMovimentacaoVO extends ExVO {
 
 	public void setSubscritor(String subscritor) {
 		this.subscritor = subscritor;
+	}
+
+	public Object getDtRegMovDDMMYYYYHHMMSS() {
+		return dtRegMovDDMMYYYYHHMMSS;
+	}
+
+	public Object getDtRegMovDDMMYYYY() {
+		return dtRegMovDDMMYYYY;
+	}
+
+	public String getDataMovimento() {
+		return dataMovimento;
 	}
 }

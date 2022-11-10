@@ -11,7 +11,7 @@
 		<table width="100%" border="0" cellpadding="2">
 			<tr>
 				<td width="100%" align="center" valign="bottom"><img
-					src="contextpath/imagens/brasao2.png" width="65" height="65" /></td>
+					src="contextpath/imagens/brasao_tjpa.png" width="65" height="65" /></td>
 			</tr>
 			<tr>
 				<td width="100%" align="center">

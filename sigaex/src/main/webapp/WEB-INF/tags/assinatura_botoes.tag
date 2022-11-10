@@ -56,7 +56,7 @@
 					<input class="custom-control-input" type="radio" 
 						   accesskey="c" name="radioProviderAssinatura" id="ad_password_0" 
 						   <c:if test="${SenhaChecked}">checked</c:if> onclick="setUserLocalStorage('tipo-assinatura', 'senha')" /> 
-					<label class="custom-control-label" for="ad_password_0">Senha</label>
+					<label class="custom-control-label" for="ad_password_0">Senha (TjPa)</label>
 
 				</div>
 			</c:if>

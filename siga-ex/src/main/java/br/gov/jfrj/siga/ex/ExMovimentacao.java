@@ -221,6 +221,22 @@ public class ExMovimentacao extends AbstractExMovimentacao implements
 	}
 
 	/**
+	 * Retorna a data de início da movimentação no formato dd/mm/aaaa, por
+	 * exemplo, 01/02/2010.
+	 * 
+	 * @return Data de início da movimentação no formato dd/mm/aaaa, por exemplo,
+	 *         01/02/2010.
+	 * 
+	 */
+	public String getDtRegMovDDMMYYYY() {
+		if (getDtIniMov() != null) {
+			final SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+			return df.format(getDtIniMov());
+		}
+		return "";
+	}
+
+	/**
 	 * Retorna a data de início da movimentação no formato dd/mm/aa HH:MI:SS,
 	 * por exemplo, 01/02/10 14:10:00.
 	 * 
@@ -271,6 +287,22 @@ public class ExMovimentacao extends AbstractExMovimentacao implements
 	}
 
 	/**
+	 * Retorna a data de retorno da movimentação no formato dd/mm/aa, por
+	 * exemplo, 01/02/210.
+	 * 
+	 * @return Data de retorno da movimentação no formato dd/mm/aa, por exemplo,
+	 *         01/02/210.
+	 * 
+	 */
+	public String getDtFimMovDDMMYYYY() {
+		if (getDtFimMov() != null) {
+			final SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+			return df.format(getDtFimMov());
+		}
+		return "";
+	}
+
+	/**
 	 * Retorna a data de retorno da movimentação no formato dd/mm/aa HH:MI:SS,
 	 * por exemplo, 01/02/10 14:10:00.
 	 * 
@@ -282,6 +314,23 @@ public class ExMovimentacao extends AbstractExMovimentacao implements
 		if (getDtFimMov() != null) {
 			final SimpleDateFormat df = new SimpleDateFormat(
 					"dd/MM/yy HH:mm:ss");
+			return df.format(getDtFimMov());
+		}
+		return "";
+	}
+
+	/**
+	 * Retorna a data de retorno da movimentação no formato dd/mm/aa HH:MI:SS,
+	 * por exemplo, 01/02/210 14:10:00.
+	 * 
+	 * @return Data de retorno da movimentação no formato dd/mm/aa HH:MI:SS, por
+	 *         exemplo, 01/02/210 14:10:00.
+	 * 
+	 */
+	public String getDtFimMovDDMMYYYYHHMMSS() {
+		if (getDtFimMov() != null) {
+			final SimpleDateFormat df = new SimpleDateFormat(
+					"dd/MM/yyyy HH:mm:ss");
 			return df.format(getDtFimMov());
 		}
 		return "";
@@ -1059,13 +1108,16 @@ public class ExMovimentacao extends AbstractExMovimentacao implements
 		String assinantesToken = getAssinantesComTokenString(getData());
 		String assinantesSenha = getAssinantesComSenhaString(getData());
 		String retorno = "";
+		
+		final String TEXTO_DESCRITIVO_ASSINATURA = ", conforme previsto na Lei 11.419/2006 e regulamentada pela Portaria 2067/2020-GP.\n";
+		
 		retorno += assinantesToken.length() > 0 ? "Assinado digitalmente por "
-				+ assinantesToken + ".\n" : "";
+				+ assinantesToken + TEXTO_DESCRITIVO_ASSINATURA : "";
 		retorno += assinantesSenha.length() > 0 ? "Assinado com senha por "
 				+ assinantesSenha + ".\n" : "";
 
 		retorno += conferentes.length() > 0 ? "Autenticado digitalmente por "
-				+ conferentes + ".\n" : "";
+				+ conferentes + TEXTO_DESCRITIVO_ASSINATURA : "";
 
 		return retorno;
 	}

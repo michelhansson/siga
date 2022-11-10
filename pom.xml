@@ -14,7 +14,7 @@
 		<module>siga-cp</module>
 		<module>siga-sinc-lib</module>
 		<module>siga-ldap</module>
-		<module>siga-vraptor-module-old</module>
+		<!-- <module>siga-vraptor-module-old</module> -->
 		<module>siga-vraptor-module</module>
 		<module>siga-dump</module>
 		<module>siga</module>

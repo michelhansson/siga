@@ -19,6 +19,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.auth0.jwt.JWTSigner;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.JWTVerifyException;
@@ -38,6 +40,7 @@ import br.gov.jfrj.itextpdf.Documento;
 import br.gov.jfrj.siga.Service;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.Prop;
+import br.gov.jfrj.siga.base.util.GoogleRecaptcha;
 import br.gov.jfrj.siga.base.util.Utils;
 import br.gov.jfrj.siga.bluc.service.BlucService;
 import br.gov.jfrj.siga.bluc.service.HashRequest;
@@ -142,7 +145,7 @@ public class ExProcessoAutenticacaoController extends ExController {
 
 			try {
 				Ex.getInstance().getBL().assinarMovimentacao(null, null, mov, dt, assinatura, certificado,
-						ExTipoDeMovimentacao.ASSINATURA_DIGITAL_MOVIMENTACAO);
+						ExTipoDeMovimentacao.ASSINATURA_DIGITAL_MOVIMENTACAO, StringUtils.EMPTY, StringUtils.EMPTY, false);
 			} catch (final Exception e) {
 				throw new AplicacaoException(e.getMessage());
 			}
@@ -197,7 +200,7 @@ public class ExProcessoAutenticacaoController extends ExController {
 			fileName = arq.getReferenciaPDF();
 			contentType = "application/pdf";
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			Documento.getDocumento(baos, null, mob, null, false, true, false, null, null);
+			Documento.getDocumento(baos, null, mob, null, false, true, false, null, null, null);
 			bytes = baos.toByteArray();
 		} else {			
 			if (idMov != null && idMov != 0) {

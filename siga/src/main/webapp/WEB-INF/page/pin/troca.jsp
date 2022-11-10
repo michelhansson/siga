@@ -1,6 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%@ page language="java" contentType="text/html; charset=UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://localhost/libstag" prefix="f"%>
 <%@ taglib uri="http://localhost/jeetags" prefix="siga"%>
 
 <siga:pagina titulo="Alteração do PIN">	
@@ -92,22 +93,23 @@
 					
 					
 					
-					
-					<div id="salvando" class="etapa etapa--final  js-etapa-final">
-						<h1 class="text-center display-4">
-							Salvando seu PIN...													
-						</h1>											
-											
-						<div class="row">
-							<div class="col-sm-12 text-center">
-					            <span class="spinner spinner--salvando js-spinner--salvando"></span>
-					            <span class="icone-salvo-sucesso"><i class="fas fa-check-circle"></i></span>
-					            <a id="btnGoToMesa" class="btn btn-primary text-center" href="/siga/app/principal" title="Ir para Mesa Virtual" style="margin-top:50px;">Ir para Mesa Virtual</a>
-					            				            					            					           
-							</div>						
+					<c:if test="${f:mesaVirtual()}">
+						<div id="salvando" class="etapa etapa--final  js-etapa-final">
+							<h1 class="text-center display-4">
+								Salvando seu PIN...													
+							</h1>											
+												
+							<div class="row">
+								<div class="col-sm-12 text-center">
+						            <span class="spinner spinner--salvando js-spinner--salvando"></span>
+						            <span class="icone-salvo-sucesso"><i class="fas fa-check-circle"></i></span>
+						            <a id="btnGoToMesa" class="btn btn-primary text-center" href="/siga/app/principal" title="Ir para Mesa Virtual" style="margin-top:50px;">Ir para Mesa Virtual</a>
+						            				            					            					           
+								</div>						
+							</div>
 						</div>
-					</div>
-										
+					</c:if>
+															
 					<div class="row mt-5">						
 					  	<div class="col-sm-12 text-right">					  	  
 							<button type="button" class="btn  btn-secondary btn-lg  btn-anterior  js-btn-cancelar">Cancelar</button>	

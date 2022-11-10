@@ -70,7 +70,7 @@ public class RelMovimentacao extends RelatorioTemplate {
 		this.addColuna("Documento", 25, RelatorioRapido.ESQUERDA, false);
 		this.addColuna("Data de Movimento", 15, RelatorioRapido.ESQUERDA, false);
 		this.addColuna("Descrição", 15, RelatorioRapido.ESQUERDA, false);
-		this.addColuna("Responsável", 15, RelatorioRapido.ESQUERDA, false);
+		//this.addColuna("Responsável", 15, RelatorioRapido.ESQUERDA, false);
 		this.addColuna("Cadastrante", 15, RelatorioRapido.ESQUERDA, false);
 		this.addColuna("Subscritor", 15, RelatorioRapido.ESQUERDA, false);
 		return this;
@@ -150,16 +150,25 @@ public class RelMovimentacao extends RelatorioTemplate {
 				} else {
 					d.add("");
 				}
-				if (mov.getLotaResp().getSigla() != null) {
-					d.add(mov.getLotaResp().getSigla());
+				/*
+				 * if (mov.getLotaResp().getSigla() != null) {
+				 * d.add(mov.getLotaResp().getSigla()); } else { d.add(""); }
+				 */
+				if (mov.getCadastrante().getNomePessoa() != null) {
+					d.add(mov.getCadastrante().getNomePessoa());
 				} else {
 					d.add("");
 				}
-				if (mov.getLotaSubscritor().getSigla() != null) {
-					d.add(mov.getLotaSubscritor().getSigla());
+				/*
+				 * if (mov.getLotaSubscritor().getSigla() != null) {
+				 * d.add(mov.getLotaSubscritor().getSigla()); } else { d.add(""); }
+				 */
+				if (mov.getSubscritor().getNomePessoa() != null) {
+					d.add(mov.getSubscritor().getNomePessoa());
 				} else {
 					d.add("");
 				}
+
 			}
 		}
 		return d;	}

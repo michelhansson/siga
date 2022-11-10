@@ -6,9 +6,19 @@
 	var uriLogoSiga = '${uri_logo_siga_pequeno}';
 </script>
 <script src="/sigaex/public/javascript/assinatura-digital.js?v=1626317334"></script>
-<input type="hidden" id="siglaUsuarioCadastrante" value="${cadastrante.sigla}"/>
-<input type="hidden" id="siglaUsuSubscritor" value="${doc.subscritor.sigla}"/>
-<input type="hidden" id="siglaUsuTitular" value="${titular.sigla}"/>
+<c:choose>
+	<c:when test="${autenticacaoSenha == false}">
+		<input type="hidden" id="siglaUsuarioCadastrante" value="${cadastrante.sigla}"/>
+	    <input type="hidden" id="siglaUsuSubscritor" value="${doc.subscritor.sigla}"/>
+		<input type="hidden" id="siglaUsuTitular" value="${titular.sigla}"/>
+	</c:when>
+	<c:otherwise>
+		<input type="hidden" id="siglaUsuarioCadastrante" value="${cadastrante.loginRede}"/>
+		<input type="hidden" id="siglaUsuSubscritor" value="${doc.subscritor.loginRede}"/>
+		<input type="hidden" id="siglaUsuTitular" value="${titular.loginRede}"/>
+	</c:otherwise>
+</c:choose>												
+
 <input type="hidden" id="nomeUsuSubscritor" value="${doc.subscritor.nomePessoa}"/>
 <input type="hidden" id="podeAssinarPor" value="${podeAssinarPor}"/>
 <input type="hidden" id="cpfUsuarioCadastrante" value="${cadastrante.cpfFormatado}"/>

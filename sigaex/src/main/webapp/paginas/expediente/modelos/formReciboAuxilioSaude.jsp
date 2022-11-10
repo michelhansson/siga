@@ -62,7 +62,7 @@
 		
 		<table width="100%"  border="0" bgcolor="#FFFFFF">
 	          <tr bgcolor="#FFFFFF">
-		         <td align="left" valign="bottom" width="15%"><img src="contextpath/imagens/brasao2.png" width="65" height="65" /></td>
+		         <td align="left" valign="bottom" width="15%"><img src="contextpath/imagens/brasao_tjpa.png" width="65" height="65" /></td>
 		         <td align="left" width="1%"></td>
 		         <td width="37%">
 		            <table align="left" width="100%">

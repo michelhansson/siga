@@ -54,7 +54,8 @@ public class DpSubstituicao extends AbstractDpSubstituicao implements
 
 	public String getDtFimSubstDDMMYY() {
 		if (getDtFimSubst() != null) {
-			final SimpleDateFormat df = new SimpleDateFormat("dd/MM/yy");
+//			final SimpleDateFormat df = new SimpleDateFormat("dd/MM/yy");
+			final SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
 			return df.format(getDtFimSubst());
 		}
 		return "";
@@ -62,7 +63,8 @@ public class DpSubstituicao extends AbstractDpSubstituicao implements
 
 	public String getDtIniSubstDDMMYY() {
 		if (getDtIniSubst() != null) {
-			final SimpleDateFormat df = new SimpleDateFormat("dd/MM/yy");
+//			final SimpleDateFormat df = new SimpleDateFormat("dd/MM/yy");
+			final SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
 			return df.format(getDtIniSubst());
 		}
 		return "";

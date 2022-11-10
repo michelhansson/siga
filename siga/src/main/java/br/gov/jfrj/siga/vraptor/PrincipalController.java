@@ -70,7 +70,7 @@ public class PrincipalController extends SigaController {
 		if (exibirAcessoAnterior != null && exibirAcessoAnterior) {
 			CpAcesso a = dao.consultarAcessoAnterior(so.getCadastrante());
 			if (a != null) {
-				String acessoAnteriorData = Data.formatDDMMYY_AS_HHMMSS(a.getDtInicio());
+				String acessoAnteriorData = Data.formatDDMMYYYY_AS_HHMMSS(a.getDtInicio());
 				String acessoAnteriorMaquina = a.getAuditIP();
 				result.include("acessoAnteriorData", acessoAnteriorData);
 				result.include("acessoAnteriorMaquina", acessoAnteriorMaquina);

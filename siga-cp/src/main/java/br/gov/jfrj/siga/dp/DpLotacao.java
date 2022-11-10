@@ -94,6 +94,9 @@ public class DpLotacao extends AbstractDpLotacao implements Serializable,
 	 *         "{@literal Indeterminado}".
 	 */
 	public String getLocalidadeString() {
+		for (String municipio : CpLocalidade.getMunicipios())
+			if (getNomeLotacao().toLowerCase().contains(municipio.toLowerCase()))
+				return municipio;
 		if (nonNull(getLocalidade())) {
 			return getLocalidade().getNmLocalidade();
 		}
@@ -154,6 +157,14 @@ public class DpLotacao extends AbstractDpLotacao implements Serializable,
 		if (isFechada())
 			s += " (extinta)";
 		return s;
+	}
+
+	public String getSiglaTJPA() {
+		String s = getSigla().substring(0, 1);
+		if (s.matches("^[a-zA-ZÁÂÃÀÇÉÊÍÓÔÕÚÜáâãàçéêíóôõúü]*$")){
+			return getSigla();
+		}
+		return getNomeLotacao();
 	}
 
 	public String getSiglaCompleta() {

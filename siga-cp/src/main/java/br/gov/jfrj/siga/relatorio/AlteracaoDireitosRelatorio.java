@@ -99,7 +99,7 @@ public class AlteracaoDireitosRelatorio extends RelatorioTemplate {
 		parametros.put("subtitulo","Sistema de Gestão Administrativa");
 		parametros.put("secaoUsuario", "");
 		if ( Prop.get("/siga.relat.brasao")  == null ) {
-			parametros.put("brasao","brasao.png");
+			parametros.put("brasao","brasao_tjpa.png");
 		} else {
 			parametros.put("brasao", Prop.get("/siga.relat.brasao") );
 		}

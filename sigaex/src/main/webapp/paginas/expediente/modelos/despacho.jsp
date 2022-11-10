@@ -5,57 +5,14 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <mod:modelo>
 	<mod:entrevista>
-		<mod:grupo titulo="Dados do Documento de Origem">
-			<c:choose>
-				<c:when
-					test="${postback != 1 && (empty doc.idDoc) && (not empty doc.pai)}">
-					<c:set var="tipoDeDocumentoValue">${doc.pai.descrFormaDoc}</c:set>
-					<c:set var="numeroValue">${doc.pai.sigla}</c:set>
-					<c:set var="dataValue">${doc.pai.dtDocDDMMYY}</c:set>
-					<c:set var="orgaoValue">${doc.pai.orgaoUsuario.acronimoOrgaoUsu}</c:set>
-				</c:when>
-				<c:otherwise>
-					<c:set var="tipoDeDocumentoValue">${param['tipoDeDocumento']}</c:set>
-					<c:set var="numeroValue">${param['numero']}</c:set>
-					<c:set var="dataValue">${param['data']}</c:set>
-					<c:set var="orgaoValue">${param['orgao']}</c:set>
-				</c:otherwise>
-			</c:choose>
-			<mod:grupo>
-				<mod:texto titulo="Tipo de documento" var="tipoDeDocumento"
-					largura="20" valor="${tipoDeDocumentoValue}" />
-				<mod:texto titulo="Número" var="numero" largura="20" valor="${numeroValue}" />
-			</mod:grupo>
-			<mod:grupo>
-				<mod:data titulo="Data" var="data" valor="${dataValue}" />
-				<mod:texto titulo="Nome do Órgão" var="orgao" largura="30" valor="${orgaoValue}"/>
-			</mod:grupo>
-		</mod:grupo>
-
-		<c:set var="orgao_dest_prov" value="${orgao_dest}" />
-		<c:if test="${param['alterouSel'] eq 'lotacaoDestinatario'}">
-			<c:set var="orgao_dest_prov">${doc.lotaDestinatario.nomeLotacao}</c:set>
-		</c:if>
-		<c:if test="${param['alterouSel'] eq 'destinatario'}">
-			<c:set var="orgao_dest_prov">${doc.destinatario.lotacao.nomeLotacao}</c:set>
-		</c:if>
-		<mod:grupo titulo="Órgão de destino">
-			<mod:grupo>
-				<mod:texto titulo="Nome" var="orgao_dest" largura="30"
-					valor="${orgao_dest_prov}" /> &nbsp&nbsp&nbsp <mod:selecao
-					titulo="Gênero do Destinatário" var="genero"
-					opcoes="Feminino;Masculino" />
-
-			</mod:grupo>
-		</mod:grupo>
+		
 		<mod:grupo titulo="Texto a ser inserido no corpo do despacho">
 			<mod:grupo>
 				<mod:editor titulo="" var="texto" />
 			</mod:grupo>
 		</mod:grupo>
 		<mod:grupo>
-			<mod:texto titulo="Nº da Portaria de delegação" var="portDelegacao"
-				largura="60" />
+			<mod:selecao titulo="Fecho" var="fecho"	opcoes="[Nenhum];Atenciosamente;Cordialmente;Respeitosamente;" />
 		</mod:grupo>
 		<mod:selecao titulo="Tamanho da letra" var="tamanhoLetra"
 			opcoes="Normal;Pequeno;Grande" />
@@ -84,26 +41,17 @@
 		<body>
 		<!-- INICIO PRIMEIRO CABECALHO
 		<table width="100%" border="0" bgcolor="#FFFFFF"><tr><td>
-		<c:import url="/paginas/expediente/modelos/inc_cabecalhoEsquerdaPrimeiraPagina.jsp" />
+		<c:import url="/paginas/expediente/modelos/inc_cabecalhoCentralizadoPrimeiraPagina.jsp" />
 		</td></tr>
 			<tr bgcolor="#FFFFFF">
 				<td width="100%">
-					<br />
-					<table width="100%">
-						<tr>
-							<td align="center"><p style="font-family:Arial;font-size:11pt;font-weight: bold;">DESPACHO N&ordm; ${doc.codigo}</p></td>
-						</tr>
-						<tr>
-							<td align="left"><p style="font-family:Arial;font-size:11pt;font-weight: bold;"><br />REF. ${tipoDeDocumento} N&ordm; ${numero}, ${data} - ${orgao}.</p></td>
-						</tr>
-					</table>
 				</td>
 			</tr>
 		</table>
 		FIM PRIMEIRO CABECALHO -->
 
 		<!-- INICIO CABECALHO
-		<c:import url="/paginas/expediente/modelos/inc_cabecalhoEsquerda.jsp" />
+		<c:import url="/paginas/expediente/modelos/inc_cabecalhoCentralizado.jsp" />
 		FIM CABECALHO -->
 		<mod:letra tamanho="${tl}">
 			<p><br>
@@ -119,7 +67,22 @@
 				</c:if>
 			</c:if>
 
+			<c:if test="${ empty texto }">
+				<p style="text-align: justify;">
+					<span style="font-size:${tl};"> ${doc.tipoDespachoDescricao} </span>
+				</p>
+			</c:if>
+
 			<span style="font-size:${tl};"> ${texto} </span>
+			
+			<c:if test="${fecho == '[Nenhum]'}">
+				 <c:set var="fecho" value="" />
+			</c:if>
+			
+			<p>
+				<span style="font-size:${tl};"> ${fecho} </span>
+			</p>
+			
 			<center>${doc.dtExtenso}</center>
 			<p>&nbsp;</p>
 			<c:import
@@ -137,4 +100,3 @@
 		</html>
 	</mod:documento>
 </mod:modelo>
-

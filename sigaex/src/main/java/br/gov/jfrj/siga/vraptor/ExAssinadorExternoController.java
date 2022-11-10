@@ -23,6 +23,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.xerces.impl.dv.util.Base64;
 import org.jboss.logging.Logger;
 import org.json.JSONArray;
@@ -348,7 +349,7 @@ public class ExAssinadorExternoController extends ExController {
 						: ExTipoDeMovimentacao.ASSINATURA_DIGITAL_MOVIMENTACAO;
 
 				Ex.getInstance().getBL().assinarMovimentacao(cadastrante, mov.getLotaTitular(), mov, dt, assinatura, null,
-						tpMov);
+						tpMov, StringUtils.EMPTY, StringUtils.EMPTY, false);
 				msg = "OK";
 			} else if (mob != null) {
 				ITipoDeMovimentacao tpMov = autenticar ? ExTipoDeMovimentacao.CONFERENCIA_COPIA_DOCUMENTO
@@ -356,7 +357,7 @@ public class ExAssinadorExternoController extends ExController {
 				// Nato: Assinatura externa não deve produzir transferência. 
 				// Se preferir a configuração default, deveria trocar o último parâmetro por null.
 				msg = Ex.getInstance().getBL().assinarDocumento(cadastrante, getLotaTitular(), mob.doc(), dt, assinatura,
-						null, tpMov, juntar, tramitar == null ? false : tramitar, exibirNoProtocolo, getTitular());
+						null, tpMov, juntar, tramitar == null ? false : tramitar, exibirNoProtocolo, getTitular(), StringUtils.EMPTY, StringUtils.EMPTY, false);
 				if (msg != null)
 					msg = "OK: " + msg;
 				else

@@ -196,11 +196,11 @@
 
 		<li class="dropdown-submenu"><a href="javascript:void(0);" class="dropdown-item dropdown-toggle">Administração</a>
 			<ul class="dropdown-menu">
-				<c:if test="${(!f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA:Sistema Integrado de Gestão Administrativa;ADM:Administração;TSEN:Ocultar Trocar Senha') || titular.orgaoUsuario.sigla == 'ZZ')}">
+				<c:if test="${(f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA:Sistema Integrado de Gestão Administrativa;ADM:Administração;TSEN:Ocultar Trocar Senha') || titular.orgaoUsuario.sigla == 'ZZ')}">
 					<li><a class="dropdown-item"
 						href="/siga/app/usuario/trocar_senha">Trocar senha</a></li>
 				</c:if>
-				<c:if test="${(!f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA;ADM;DEMAIL:Definir Email do Usuário') || titular.orgaoUsuario.sigla == 'ZZ')}">
+				<c:if test="${(f:podeUtilizarServicoPorConfiguracao(titular,lotaTitular,'SIGA;ADM;DEMAIL:Definir Email do Usuário') || titular.orgaoUsuario.sigla == 'ZZ')}">
 					<li><a class="dropdown-item"
 						href="/siga/app/usuario/trocar_email">Trocar Email do Usuário</a></li>
 				</c:if>
@@ -351,15 +351,19 @@
 						<li class="dropdown-submenu"><a href="javascript:void(0);"
 							class="dropdown-item dropdown-toggle">Relatórios</a>
 							<ul class="dropdown-menu">
+							    <!-- 
 								<li><a class="dropdown-item"
 									href="/siga/app/gi/relatorio/selecionar_acesso_servico">Acesso
 										aos Serviços</a></li>
+								-->		
 								<li><a class="dropdown-item"
 									href="/siga/app/gi/relatorio/selecionar_permissao_usuario">Permissões
 										de Usuário</a></li>
+							    <!-- 
 								<li><a class="dropdown-item"
 									href="/siga/app/gi/relatorio/selecionar_alteracao_direitos">Alteração
 										de Direitos</a></li>
+								-->		
 								<li><a class="dropdown-item"
 									href="/siga/app/gi/relatorio/selecionar_historico_usuario">Histórico
 										de Usuário</a></li>
@@ -460,7 +464,7 @@
 			</li>
 		</c:if>
 
-		<li><a class="dropdown-item" href="/siga/public/app/logout">Logoff</a></li>
+		<li><a class="dropdown-item" href="/siga/public/app/logout">Sair</a></li>
 	</ul></li>
 
 <!-- insert menu -->

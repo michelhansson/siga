@@ -771,6 +771,28 @@ public class CpDao extends ModeloDao {
 	}
 
 	@SuppressWarnings("unchecked")
+	public DpLotacao consultarPorSiglaUltimaLotacao(final DpLotacao o) {
+		final Query query = em().createNamedQuery(
+				"consultarPorSiglaDpLotacaoDesabilitada");
+		query.setParameter("siglaLotacao", o.getSigla());
+		if (o.getOrgaoUsuario() != null)
+			if (o.getOrgaoUsuario().getIdOrgaoUsu() != null)
+				query.setParameter("idOrgaoUsu", o.getOrgaoUsuario().getIdOrgaoUsu());
+			else
+				query.setParameter("idOrgaoUsu",
+						consultarPorSigla(o.getOrgaoUsuario()).getId());
+		else
+			query.setParameter("idOrgaoUsu", 0);
+
+		query.setHint("org.hibernate.cacheable", true);
+		query.setHint("org.hibernate.cacheRegion", CACHE_QUERY_CONFIGURACAO);
+		final List<DpLotacao> l = query.getResultList();
+		if (l.size() == 0)
+			return null;
+		return l.get(0);
+	}
+	
+	@SuppressWarnings("unchecked")
 	public DpLotacao consultarPorNomeOrgao(final DpLotacao o) {
 		final Query query = em().createNamedQuery("consultarPorNomeOrgaoDpLotacao");
 		query.setParameter("nome", o.getNomeLotacao());
@@ -843,7 +865,8 @@ public class CpDao extends ModeloDao {
 		if (lotacao == null) {
 			o.setSiglaLotacao(flt.getSigla());
 			o.setOrgaoUsuario(null);
-			return consultarPorSigla(o,flt.isBuscarFechadas());
+			return consultarPorSiglaUltimaLotacao(o);
+			//return consultarPorSigla(o);
 		}
 		return lotacao;
 	}
@@ -1052,7 +1075,26 @@ public class CpDao extends ModeloDao {
 			return null;
 		}
 	}
-	
+
+	@SuppressWarnings("unchecked")
+	public DpPessoa consultarPorMaricula(Long matricula) {
+		try {
+			final Query query = em().createNamedQuery("consultarPorMatricula");
+			query.setParameter("matricula", matricula);
+			/*
+			 * if (o.getOrgaoUsuario().getIdOrgaoUsu() != null) query.setParameter("idOrgaoUsu",
+			 * o.getOrgaoUsuario().getIdOrgaoUsu()); else query.setParameter("idOrgaoUsu", 0);
+			 */
+
+			final List<DpPessoa> l = query.getResultList();
+			if (l.size() != 1)
+				return null;
+			return l.get(0);
+		} catch (final NullPointerException e) {
+			return null;
+		}
+	}
+
 	/**
 	 * retorna a pessoa pelo sesb+matricula
 	 * 
@@ -2966,6 +3008,37 @@ public class CpDao extends ModeloDao {
 		
 		query.where(predicateAnd);
 		return em().createQuery(query).getResultList();
+	}
+
+	public String consultarIPDoServidor() throws AplicacaoException {
+		final Query qry = em().createNamedQuery("consultarIPDoServidor");
+		String result = (String) qry.getSingleResult();
+		if (result == null || "".equals(result))
+			throw new AplicacaoException(
+					"Nao foi possivel obter IP do servidor.");
+
+		return result;
+	}
+
+	public DpPessoa consultarPorEmailLogin(final String email) {
+
+		final Query qry = em().createNamedQuery("consultarPorEmailLogin");
+		qry.setParameter("emailPessoa", email);
+		final DpPessoa pes = (DpPessoa) qry.getSingleResult();
+		return pes;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<DpSubstituicao> consultarSubstitutosDaLotacao(final DpLotacao lotaResp) throws SQLException {
+		try {
+			final Query qry = em().createNamedQuery("consultarSubstituicoesDaLotacao");
+			qry.setParameter("idLotaTitularIni", lotaResp.getIdLotacaoIni());
+			return qry.getResultList();
+		} catch (final IllegalArgumentException e) {
+			throw e;
+		} catch (final Exception e) {
+			return null;
+		}
 	}
 	
 }

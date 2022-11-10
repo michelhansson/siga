@@ -45,6 +45,8 @@ public class SigaObjects implements ConheceUsuario {
 
 	private String mensagem;
 
+	private String ipAdress;
+
 	public SigaObjects() throws Exception {
 		this(null);
 	}
@@ -176,6 +178,27 @@ public class SigaObjects implements ConheceUsuario {
 
 	public CpDao dao() {
 		return CpDao.getInstance();
+	}
+
+	public String getIpAdress() {
+	      String ipAddress = request.getHeader("x-forwarded-for");
+		  if (ipAddress == null) {
+		      ipAddress = request.getHeader("X_FORWARDED_FOR");
+			  if (ipAddress == null){
+			     ipAddress = request.getRemoteAddr();
+			  }
+		  }
+		  
+		  String ip = dao().consultarIPDoServidor();
+		  if (ipAddress != null || !"".equals(ipAddress) && !ip.equals(ipAddress)) {
+		     ip = ipAddress;
+		  }
+		  this.ipAdress = ip;
+		return ipAdress;
+	}
+
+	public void setIpAdress(String ipAdress) {
+		this.ipAdress = ipAdress;
 	}
 
 }

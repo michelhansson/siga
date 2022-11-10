@@ -158,10 +158,10 @@
 							<c:if test="${ (exibirCompleto == true) or (mov.exTipoMovimentacao != 'CANCELAMENTO_DE_MOVIMENTACAO' and not mov.cancelada)}">
 								<tr class="${mov.classe} ${mov.disabled}">
 									<c:if test="${ (exibirCompleto == 'true')}">
-										<c:set var="dt" value="${mov.dtRegMovDDMMYYHHMMSS}" />
+										<c:set var="dt" value="${mov.dtRegMovDDMMYYYYHHMMSS}" />
 									</c:if>
 									<c:if test="${ (exibirCompleto != 'true')}">
-										<c:set var="dt" value="${mov.dtRegMovDDMMYY}" />
+										<c:set var="dt" value="${mov.dtRegMovDDMMYYYY}" />
 									</c:if>
 									<c:choose>
 										<c:when test="${dt == dtUlt}">
@@ -177,11 +177,19 @@
 									<td>
 										${mov.descrTipoMovimentacao}
 									</td>
+									<!-- 
 									<td class="text-left">
 										<siga:selecionado isVraptor="true" sigla="${mov.parte.lotaCadastrante.siglaOrgao}${mov.parte.lotaCadastrante.sigla}"
 											descricao="${mov.parte.lotaCadastrante.descricaoAmpliada}"
 											lotacaoParam="${mov.parte.lotaCadastrante.siglaOrgao}${mov.parte.lotaCadastrante.sigla}" />
 									</td>
+									 -->
+									<td class="text-left">
+										<siga:selecionado isVraptor="true" sigla="${mov.parte.lotaCadastrante.sigla}"
+											descricao="${mov.parte.lotaCadastrante.descricaoAmpliada}"
+											lotacaoParam="${mov.parte.lotaCadastrante.siglaOrgao}${mov.parte.lotaCadastrante.sigla}" />
+									</td>
+
 									<td class="text-left">
 										<siga:selecionado isVraptor="true" sigla="${mov.parte.cadastrante.nomeAbreviado}"
 											descricao="${mov.parte.cadastrante.descricao} - ${mov.parte.cadastrante.sigla}"

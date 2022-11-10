@@ -48,6 +48,24 @@ public enum ExTipoDeConfiguracao implements ITipoDeConfiguracao {
 					CpSituacaoDeConfiguracaoEnum.NAO_PODE },
 			CpSituacaoDeConfiguracaoEnum.NAO_PODE, true),
 	//
+	CANCELAR_ARQUIVO_AUXILIAR(43, "Cancelar Arquivo Auxiliar",
+			"Cancelamento de Anexação de Arquivo Auxiliar.",
+			new Enum[] { CpParamCfg.PESSOA, CpParamCfg.LOTACAO, CpParamCfg.TIPO_DE_LOTACAO, CpParamCfg.CARGO,
+					CpParamCfg.FUNCAO, CpParamCfg.ORGAO },
+			new Enum[] { ExParamCfg.TIPO_MOVIMENTACAO, CpParamCfg.SITUACAO },
+			new CpSituacaoDeConfiguracaoEnum[] { CpSituacaoDeConfiguracaoEnum.PODE,
+					CpSituacaoDeConfiguracaoEnum.NAO_PODE },
+			CpSituacaoDeConfiguracaoEnum.NAO_PODE, true),
+	//
+	CANCELAR_MOVIMENTACAO_ARQUIVO_AUXILIAR(44, "Cancelar Movimentação de Arquivo Auxiliar",
+			"Cancela Anexação de Arquivo Auxiliar das movimentações.",
+			new Enum[] { CpParamCfg.PESSOA, CpParamCfg.LOTACAO, CpParamCfg.TIPO_DE_LOTACAO, CpParamCfg.CARGO,
+					CpParamCfg.FUNCAO, CpParamCfg.ORGAO },
+			new Enum[] { ExParamCfg.TIPO_MOVIMENTACAO, CpParamCfg.SITUACAO },
+			new CpSituacaoDeConfiguracaoEnum[] { CpSituacaoDeConfiguracaoEnum.PODE,
+					CpSituacaoDeConfiguracaoEnum.NAO_PODE },
+			CpSituacaoDeConfiguracaoEnum.NAO_PODE, true),
+	//
 	CANCELAR_VIA(16, "Cancelar Via", "Indica situações nas quais uma via pode ser cancelada.",
 			new Enum[] { CpParamCfg.PESSOA, CpParamCfg.LOTACAO, CpParamCfg.TIPO_DE_LOTACAO, CpParamCfg.CARGO,
 					CpParamCfg.FUNCAO, CpParamCfg.ORGAO, ExParamCfg.TIPO_DOCUMENTO, ExParamCfg.TIPO_FORMA_DOCUMENTO,
@@ -67,7 +85,7 @@ public enum ExTipoDeConfiguracao implements ITipoDeConfiguracao {
 					CpSituacaoDeConfiguracaoEnum.NAO_PODE },
 			CpSituacaoDeConfiguracaoEnum.PODE, true),
 	//
-	CRIAR_COMO_NOVO(42, "Criar como Novo",
+	CRIAR_COMO_NOVO(46, "Criar como Novo",
 			"Normalmente todos os modelos de documentos podem ser criados por qualquer usuário, mas restrições podem ser impostas através dessa configuração. Modelos ou espécies específicas podem ser restritas de modo que apenas algumas pessoas ou lotações tenham permissão para criá-las quando clica no botão \"Criar Documento\". Veja também a configuração \"Despachável\".",
 			new Enum[] { CpParamCfg.PESSOA, CpParamCfg.LOTACAO, CpParamCfg.TIPO_DE_LOTACAO, CpParamCfg.CARGO,
 					CpParamCfg.FUNCAO, CpParamCfg.ORGAO, ExParamCfg.TIPO_DOCUMENTO, ExParamCfg.TIPO_FORMA_DOCUMENTO,
@@ -159,6 +177,16 @@ public enum ExTipoDeConfiguracao implements ITipoDeConfiguracao {
 					CpSituacaoDeConfiguracaoEnum.NAO_PODE },
 			CpSituacaoDeConfiguracaoEnum.NAO_PODE, true),
 	//
+	EDITAR_ORIGEM(42, "Editar Origem",
+			"Define se o documento da Origem será editável",
+			new Enum[] { CpParamCfg.PESSOA, CpParamCfg.LOTACAO, CpParamCfg.TIPO_DE_LOTACAO, CpParamCfg.CARGO,
+					CpParamCfg.FUNCAO, CpParamCfg.ORGAO, ExParamCfg.TIPO_DOCUMENTO, ExParamCfg.TIPO_FORMA_DOCUMENTO,
+					ExParamCfg.FORMA_DOCUMENTO, ExParamCfg.MODELO },
+			new Enum[] { CpParamCfg.SITUACAO },
+			new CpSituacaoDeConfiguracaoEnum[] { CpSituacaoDeConfiguracaoEnum.PODE,
+					CpSituacaoDeConfiguracaoEnum.NAO_PODE },
+			CpSituacaoDeConfiguracaoEnum.NAO_PODE, true),
+	//
 	EDITAR_DESCRICAO(37, "Editar Descrição",
 			"Define se a descrição será editável ou se será gerada automaticamente pelo sistema.",
 			new Enum[] { CpParamCfg.PESSOA, CpParamCfg.LOTACAO, CpParamCfg.TIPO_DE_LOTACAO, CpParamCfg.CARGO,
@@ -236,7 +264,7 @@ public enum ExTipoDeConfiguracao implements ITipoDeConfiguracao {
 					CpSituacaoDeConfiguracaoEnum.NAO_PODE },
 			CpSituacaoDeConfiguracaoEnum.PODE, true),
 	//
-	INCLUIR_DOCUMENTO(41, "Incluir Documento",
+	INCLUIR_DOCUMENTO(45, "Incluir Documento",
 			"Esta configuração indica se o usuário poderá executar a ação de \"Incluir Documento\".",
 			new Enum[] { CpParamCfg.PESSOA, CpParamCfg.LOTACAO, CpParamCfg.TIPO_DE_LOTACAO, CpParamCfg.CARGO,
 					CpParamCfg.FUNCAO, CpParamCfg.ORGAO, ExParamCfg.TIPO_DOCUMENTO, ExParamCfg.TIPO_FORMA_DOCUMENTO,
@@ -246,7 +274,7 @@ public enum ExTipoDeConfiguracao implements ITipoDeConfiguracao {
 					CpSituacaoDeConfiguracaoEnum.NAO_PODE },
 			CpSituacaoDeConfiguracaoEnum.PODE, true),
 	//
-	JUNTADA_AUTOMATICA(43, "Juntada Automática",
+	JUNTADA_AUTOMATICA(41, "Juntada Automática",
 			"Esta configuração indica se haverá a opção de \"Juntar\" automaticamente no momento da assinatura do documento.",
 			new Enum[] { CpParamCfg.PESSOA, CpParamCfg.LOTACAO, CpParamCfg.TIPO_DE_LOTACAO, CpParamCfg.CARGO,
 					CpParamCfg.FUNCAO, CpParamCfg.ORGAO, ExParamCfg.TIPO_DOCUMENTO, ExParamCfg.TIPO_FORMA_DOCUMENTO,
@@ -382,7 +410,7 @@ public enum ExTipoDeConfiguracao implements ITipoDeConfiguracao {
 					CpSituacaoDeConfiguracaoEnum.NAO_PODE },
 			CpSituacaoDeConfiguracaoEnum.NAO_PODE, true),
 	//
-	INCLUIR_EM_AVULSO(45, "Incluir em Avulso?", "",
+	INCLUIR_EM_AVULSO(63, "Incluir em Avulso?", "",
 			new Enum[] { CpParamCfg.PESSOA, CpParamCfg.LOTACAO, CpParamCfg.TIPO_DE_LOTACAO, CpParamCfg.CARGO,
 					CpParamCfg.FUNCAO, CpParamCfg.ORGAO, CpParamCfg.PERFIL, CpParamCfg.SERVICO,
 					CpParamCfg.PESSOA_OBJETO, CpParamCfg.LOTACAO_OBJETO, CpParamCfg.CARGO_OBJETO,
@@ -394,7 +422,7 @@ public enum ExTipoDeConfiguracao implements ITipoDeConfiguracao {
 					CpSituacaoDeConfiguracaoEnum.NAO_PODE },
 			CpSituacaoDeConfiguracaoEnum.PODE, true),
 	//
-	COSIGNATARIO_ASSINAR_ANTES_SUBSCRITOR(46, "Cossignatário Assinar Antes do Subscritor?", "",
+	COSIGNATARIO_ASSINAR_ANTES_SUBSCRITOR(49, "Cossignatário Assinar Antes do Subscritor?", "",
 			new Enum[] { CpParamCfg.PESSOA, CpParamCfg.LOTACAO, CpParamCfg.TIPO_DE_LOTACAO, CpParamCfg.CARGO,
 					CpParamCfg.FUNCAO, CpParamCfg.ORGAO, CpParamCfg.PERFIL, CpParamCfg.SERVICO,
 					CpParamCfg.PESSOA_OBJETO, CpParamCfg.LOTACAO_OBJETO, CpParamCfg.CARGO_OBJETO,
@@ -406,7 +434,7 @@ public enum ExTipoDeConfiguracao implements ITipoDeConfiguracao {
 					CpSituacaoDeConfiguracaoEnum.NAO_PODE },
 			CpSituacaoDeConfiguracaoEnum.NAO_PODE, true),
 	//
-	FINALIZAR_AUTOMATICAMENTE_CAPTURADOS(47, "Finalizar Automaticamente Capturados?", "",
+	FINALIZAR_AUTOMATICAMENTE_CAPTURADOS(50, "Finalizar Automaticamente Capturados?", "",
 			new Enum[] { CpParamCfg.PESSOA, CpParamCfg.LOTACAO, CpParamCfg.TIPO_DE_LOTACAO, CpParamCfg.CARGO,
 					CpParamCfg.FUNCAO, CpParamCfg.ORGAO, CpParamCfg.PERFIL, CpParamCfg.SERVICO,
 					CpParamCfg.PESSOA_OBJETO, CpParamCfg.LOTACAO_OBJETO, CpParamCfg.CARGO_OBJETO,
@@ -418,7 +446,7 @@ public enum ExTipoDeConfiguracao implements ITipoDeConfiguracao {
 					CpSituacaoDeConfiguracaoEnum.NAO_PODE },
 			CpSituacaoDeConfiguracaoEnum.NAO_PODE, true),
 	//
-	TROCAR_PDF_CAPTURADOS(48, "Trocar PDFs Capturados?", "",
+	TROCAR_PDF_CAPTURADOS(51, "Trocar PDFs Capturados?", "",
 			new Enum[] { CpParamCfg.PESSOA, CpParamCfg.LOTACAO, CpParamCfg.TIPO_DE_LOTACAO, CpParamCfg.CARGO,
 					CpParamCfg.FUNCAO, CpParamCfg.ORGAO, CpParamCfg.PERFIL, CpParamCfg.SERVICO,
 					CpParamCfg.PESSOA_OBJETO, CpParamCfg.LOTACAO_OBJETO, CpParamCfg.CARGO_OBJETO,
@@ -430,7 +458,7 @@ public enum ExTipoDeConfiguracao implements ITipoDeConfiguracao {
 					CpSituacaoDeConfiguracaoEnum.NAO_PODE },
 			CpSituacaoDeConfiguracaoEnum.PODE, true),
 	//
-	TMP_PARA_LOTACAO(49, "Mostrar temporários para Lotação", "",
+	TMP_PARA_LOTACAO(52, "Mostrar temporários para Lotação", "",
 			new Enum[] { CpParamCfg.PESSOA, CpParamCfg.LOTACAO, CpParamCfg.TIPO_DE_LOTACAO, CpParamCfg.CARGO,
 					CpParamCfg.FUNCAO, CpParamCfg.ORGAO, CpParamCfg.PERFIL, CpParamCfg.SERVICO,
 					CpParamCfg.PESSOA_OBJETO, CpParamCfg.LOTACAO_OBJETO, CpParamCfg.CARGO_OBJETO,
@@ -442,7 +470,7 @@ public enum ExTipoDeConfiguracao implements ITipoDeConfiguracao {
 					CpSituacaoDeConfiguracaoEnum.NAO_PODE },
 			CpSituacaoDeConfiguracaoEnum.PODE, true),
 	//
-	RESTRINGIR_ACESSO_APOS_RECEBER(50, "Restringir Acesso Após Receber?", "",
+	RESTRINGIR_ACESSO_APOS_RECEBER(54, "Restringir Acesso Após Receber?", "",
 			new Enum[] { CpParamCfg.PESSOA, CpParamCfg.LOTACAO, CpParamCfg.TIPO_DE_LOTACAO, CpParamCfg.CARGO,
 					CpParamCfg.FUNCAO, CpParamCfg.ORGAO, CpParamCfg.PERFIL, CpParamCfg.SERVICO,
 					CpParamCfg.PESSOA_OBJETO, CpParamCfg.LOTACAO_OBJETO, CpParamCfg.CARGO_OBJETO,
@@ -454,7 +482,7 @@ public enum ExTipoDeConfiguracao implements ITipoDeConfiguracao {
 					CpSituacaoDeConfiguracaoEnum.NAO_PODE },
 			CpSituacaoDeConfiguracaoEnum.NAO_PODE, true),
 	//
-	AUTORIZAR_MOVIMENTACAO_POR_WS(51, "Autorizar Movimentação por WS?", "",
+	AUTORIZAR_MOVIMENTACAO_POR_WS(53, "Autorizar Movimentação por WS?", "",
 			new Enum[] { CpParamCfg.PESSOA, CpParamCfg.LOTACAO, CpParamCfg.TIPO_DE_LOTACAO, CpParamCfg.CARGO,
 					CpParamCfg.FUNCAO, CpParamCfg.ORGAO, CpParamCfg.PERFIL, CpParamCfg.SERVICO,
 					CpParamCfg.PESSOA_OBJETO, CpParamCfg.LOTACAO_OBJETO, CpParamCfg.CARGO_OBJETO,
@@ -466,7 +494,7 @@ public enum ExTipoDeConfiguracao implements ITipoDeConfiguracao {
 					CpSituacaoDeConfiguracaoEnum.NAO_PODE },
 			CpSituacaoDeConfiguracaoEnum.NAO_PODE, true),
 	//
-	DELEGAR_VISUALIZACAO(44, "Delegar Visualização?", "",
+	DELEGAR_VISUALIZACAO(47, "Delegar Visualização?", "",
 			new Enum[] { CpParamCfg.PESSOA, CpParamCfg.LOTACAO, CpParamCfg.TIPO_DE_LOTACAO, CpParamCfg.CARGO,
 					CpParamCfg.FUNCAO, CpParamCfg.ORGAO, CpParamCfg.PERFIL, CpParamCfg.SERVICO,
 					CpParamCfg.PESSOA_OBJETO, CpParamCfg.LOTACAO_OBJETO, CpParamCfg.CARGO_OBJETO,
@@ -478,7 +506,7 @@ public enum ExTipoDeConfiguracao implements ITipoDeConfiguracao {
 					CpSituacaoDeConfiguracaoEnum.NAO_PODE },
 			CpSituacaoDeConfiguracaoEnum.NAO_PODE, true),
 	//
-	TRAMITAR_SEM_CAPTURADO(52, "Tramitar sem Capturado?", "",
+	TRAMITAR_SEM_CAPTURADO(55, "Tramitar sem Capturado?", "",
 			new Enum[] { CpParamCfg.PESSOA, CpParamCfg.LOTACAO, CpParamCfg.TIPO_DE_LOTACAO, CpParamCfg.CARGO,
 					CpParamCfg.FUNCAO, CpParamCfg.ORGAO, CpParamCfg.PERFIL, CpParamCfg.SERVICO,
 					CpParamCfg.PESSOA_OBJETO, CpParamCfg.LOTACAO_OBJETO, CpParamCfg.CARGO_OBJETO,
@@ -490,7 +518,7 @@ public enum ExTipoDeConfiguracao implements ITipoDeConfiguracao {
 					CpSituacaoDeConfiguracaoEnum.NAO_PODE },
 			CpSituacaoDeConfiguracaoEnum.PODE, true),
 	//
-	CRIAR_NOVO_EXTERNO(53, "Criar Novo Externo", "",
+	CRIAR_NOVO_EXTERNO(56, "Criar Novo Externo", "",
 			new Enum[] { CpParamCfg.PESSOA, CpParamCfg.LOTACAO, CpParamCfg.TIPO_DE_LOTACAO, CpParamCfg.CARGO,
 					CpParamCfg.FUNCAO, CpParamCfg.ORGAO, CpParamCfg.PERFIL, CpParamCfg.SERVICO,
 					CpParamCfg.PESSOA_OBJETO, CpParamCfg.LOTACAO_OBJETO, CpParamCfg.CARGO_OBJETO,
@@ -503,7 +531,7 @@ public enum ExTipoDeConfiguracao implements ITipoDeConfiguracao {
 			CpSituacaoDeConfiguracaoEnum.NAO_PODE, true),
 	//
 
-	TRAMITAR_PARA_LOTACAO_SEM_USUARIOS_ATIVOS(54, "Tramitar para Lotação sem Usuários Ativos?", "",
+	TRAMITAR_PARA_LOTACAO_SEM_USUARIOS_ATIVOS(57, "Tramitar para Lotação sem Usuários Ativos?", "",
 			new Enum[] { CpParamCfg.PESSOA, CpParamCfg.LOTACAO, CpParamCfg.TIPO_DE_LOTACAO, CpParamCfg.CARGO,
 					CpParamCfg.FUNCAO, CpParamCfg.ORGAO, CpParamCfg.PERFIL, CpParamCfg.SERVICO,
 					CpParamCfg.PESSOA_OBJETO, CpParamCfg.LOTACAO_OBJETO, CpParamCfg.CARGO_OBJETO,
@@ -513,8 +541,8 @@ public enum ExTipoDeConfiguracao implements ITipoDeConfiguracao {
 			new Enum[] { CpParamCfg.SITUACAO }, new CpSituacaoDeConfiguracaoEnum[] { CpSituacaoDeConfiguracaoEnum.PODE,
 					CpSituacaoDeConfiguracaoEnum.NAO_PODE },
 			CpSituacaoDeConfiguracaoEnum.NAO_PODE, true), 
-	//
-	EXIBIR_QUEM_TEM_ACESSO_DOCUMENTO_LIMITADO(55,"Exibir quem tem acesso a documentos limitados?", "Tem como objetivo não exibir as informações das pessoas e lotações que tem acesso a um documento limitado",
+	
+	EXIBIR_QUEM_TEM_ACESSO_DOCUMENTO_LIMITADO(58,"Exibir quem tem acesso a documentos limitados?", "Tem como objetivo não exibir as informações das pessoas e lotações que tem acesso a um documento limitado",
 			new Enum[] { CpParamCfg.PESSOA, CpParamCfg.LOTACAO, CpParamCfg.ORGAO, ExParamCfg.TIPO_DOCUMENTO,
 					ExParamCfg.TIPO_FORMA_DOCUMENTO, ExParamCfg.FORMA_DOCUMENTO, ExParamCfg.MODELO },
 			new Enum[] { CpParamCfg.SITUACAO }, new CpSituacaoDeConfiguracaoEnum[] { CpSituacaoDeConfiguracaoEnum.PODE,
@@ -527,8 +555,8 @@ public enum ExTipoDeConfiguracao implements ITipoDeConfiguracao {
 			new Enum[] { CpParamCfg.SITUACAO }, new CpSituacaoDeConfiguracaoEnum[] { CpSituacaoDeConfiguracaoEnum.PODE,
 					CpSituacaoDeConfiguracaoEnum.NAO_PODE },
 			CpSituacaoDeConfiguracaoEnum.NAO_PODE, true),
-	//
-	RESTRINGIR_DEF_ACOMPANHAMENTO(56, "Restringir Def. Acompanhamento", "Esta configuração define a limitação  de Pessoa, Cargo, Função de Confiança, Lotação e Órgão na Definição de Acompanhmento," +
+
+	RESTRINGIR_DEF_ACOMPANHAMENTO(59, "Restringir Def. Acompanhamento", "Esta configuração define a limitação  de Pessoa, Cargo, Função de Confiança, Lotação e Órgão na Definição de Acompanhmento," +
 			" “Não Pode”, ou seja, após a configuração realizada, o Usuário/ Unidade informado, ficará restrito na definição de acompanhamento.<br>" + 
 			"Os campos com objeto define a Pessoa, Cargo, Função de Confiança, Lotação e Órgão alvo.<br>" + 
 			"Os campos sem objeto define a Pessoa, Cargo, Função de Confiança, Lotação e Órgão o acesso a realizar a ação, “Pode”.",
@@ -539,7 +567,7 @@ public enum ExTipoDeConfiguracao implements ITipoDeConfiguracao {
 					CpSituacaoDeConfiguracaoEnum.NAO_PODE },
 			CpSituacaoDeConfiguracaoEnum.PODE, true),
 	
-	RESTRINGIR_COSSIGNATARIO_SUBSCRITOR(57, "Restrição de Cossignatário e Subscritor", "Esta configuração define a limitação de Pessoa, Cargo, Função de Confiança, Lotação e Órgão" +
+	RESTRINGIR_COSSIGNATARIO_SUBSCRITOR(60, "Restrição de Cossignatário e Subscritor", "Esta configuração define a limitação de Pessoa, Cargo, Função de Confiança, Lotação e Órgão" +
 			" na tentativa de Inclusão de Cossignatário ou Subscritor, “Não Pode”, ou seja, após a configuração realizada, o Usuário / Lotação ou Órgão informado, ficará restrito<br>" + 
 			"Os campos com objeto define a Pessoa, Cargo, Função de Confiança, Lotação e Órgão alvo.<br>" + 
 			"Os campos sem objeto define a Pessoa, Cargo, Função de Confiança, Lotação e Órgão o acesso a realizar a ação, “Pode”.",
@@ -550,7 +578,7 @@ public enum ExTipoDeConfiguracao implements ITipoDeConfiguracao {
 					CpSituacaoDeConfiguracaoEnum.NAO_PODE },
 			CpSituacaoDeConfiguracaoEnum.PODE, true),
 	
-	RESTRINGIR_TRAMITACAO(58, "Restringir Tramitação", "Esta configuração define a exceção de Pessoa, Cargo, Função de Confiança, Unidade e Órgão na Restrição de Tramitação de documento," +
+	RESTRINGIR_TRAMITACAO(61, "Restringir Tramitação", "Esta configuração define a exceção de Pessoa, Cargo, Função de Confiança, Unidade e Órgão na Restrição de Tramitação de documento," +
 			" “Pode”, ou seja, após a configuração realizada, o Usuário estará apto para tramitar para um Usuário, Unidade ou Órgão restrito.<br>" +
 			"Os campos com objeto define a Pessoa, Cargo, Função de Confiança, Lotação e Órgão alvo.<br>" +
 			"Os campos sem objeto define a Pessoa, Cargo, Função de Confiança, Lotação e Órgão o acesso a realizar a ação, “Pode”.",
@@ -561,7 +589,7 @@ public enum ExTipoDeConfiguracao implements ITipoDeConfiguracao {
 					CpSituacaoDeConfiguracaoEnum.NAO_PODE },
 			CpSituacaoDeConfiguracaoEnum.PODE, true),
 	//
-	EXIBIR_PREENCHIMENTOS_AUTOMATICOS_DE_OUTRAS_LOTACOES(59, "Exibir preenchimentos automáticos de outras lotações", "Esta configuração define se determinada pessoa ou lotação visualiza preenchimentos automáticos de outras lotações na lista de preenchimentos automáticos, na página de edição de documento.",
+	EXIBIR_PREENCHIMENTOS_AUTOMATICOS_DE_OUTRAS_LOTACOES(62, "Exibir preenchimentos automáticos de outras lotações", "Esta configuração define se determinada pessoa ou lotação visualiza preenchimentos automáticos de outras lotações na lista de preenchimentos automáticos, na página de edição de documento.",
 			new Enum[] { CpParamCfg.PESSOA, CpParamCfg.LOTACAO, CpParamCfg.CARGO,CpParamCfg.FUNCAO, CpParamCfg.ORGAO},
 			new Enum[] { CpParamCfg.SITUACAO }, new CpSituacaoDeConfiguracaoEnum[] { CpSituacaoDeConfiguracaoEnum.PODE,
 					CpSituacaoDeConfiguracaoEnum.NAO_PODE },

@@ -9,6 +9,8 @@ public class ItemDeProtocolo {
 	
 	private String dtDDMMYY;
 	
+	private String dtDDMMYYYY;
+
 	private DpPessoa subscritor;
 	
 	private DpLotacao lotaSubscritor;
@@ -28,6 +30,7 @@ public class ItemDeProtocolo {
 		setAtendente(mov.getResp());
 		setLotaAtendente(mov.getLotaResp());
 		setDtDDMMYY(mov.getDtMovDDMMYY());
+		setDtDDMMYYYY(mov.getDtMovDDMMYYYY());
 		
 		//Evitar lazy exception:
 		getDoc().getCodigo();
@@ -47,6 +50,14 @@ public class ItemDeProtocolo {
 
 	public void setDtDDMMYY(String dtDDMMYY) {
 		this.dtDDMMYY = dtDDMMYY;
+	}
+
+	public String getDtDDMMYYYY() {
+		return dtDDMMYYYY;
+	}
+
+	public void setDtDDMMYYYY(String dtDDMMYYYY) {
+		this.dtDDMMYYYY = dtDDMMYYYY;
 	}
 
 	public DpPessoa getSubscritor() {

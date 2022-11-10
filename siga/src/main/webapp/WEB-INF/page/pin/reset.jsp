@@ -97,20 +97,21 @@
 					
 					
 					
-					<div id="salvando" class="etapa etapa--final  js-etapa-final">
-						<h1 class="text-center display-4">
-							Salvando seu PIN...													
-						</h1>											
-											
-						<div class="row">
-							<div class="col-sm-12 text-center">
-					            <span class="spinner spinner--salvando js-spinner--salvando"></span>
-					            <span class="icone-salvo-sucesso"><i class="fas fa-check-circle"></i></span>
-					            <a id="btnGoToMesa" class="btn btn-primary text-center" href="/siga/app/principal" title="Cadastrar Nova Configuração" style="margin-top:50px;">Ir para Mesa Virtual</a>
-					            				            					            					           
-							</div>						
+					<c:if test="${f:mesaVirtual()}">
+						<div id="salvando" class="etapa etapa--final  js-etapa-final">
+							<h1 class="text-center display-4">
+								Salvando seu PIN...													
+							</h1>											
+	
+							<div class="row">
+								<div class="col-sm-12 text-center">
+						            <span class="spinner spinner--salvando js-spinner--salvando"></span>
+						            <span class="icone-salvo-sucesso"><i class="fas fa-check-circle"></i></span>
+						            <a id="btnGoToMesa" class="btn btn-primary text-center" href="/siga/app/principal" title="Cadastrar Nova Configuração" style="margin-top:50px;">Ir para Mesa Virtual</a>
+								</div>						
+							</div>
 						</div>
-					</div>
+					</c:if>	
 										
 					<div class="row mt-5">						
 					  	<div class="col-sm-12 text-right">					  	  

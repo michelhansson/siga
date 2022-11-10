@@ -63,7 +63,9 @@ import br.gov.jfrj.siga.dp.CpOrgaoUsuario;
 import br.gov.jfrj.siga.dp.DpLotacao;
 import br.gov.jfrj.siga.dp.DpPessoa;
 import br.gov.jfrj.siga.dp.dao.CpDao;
+import br.gov.jfrj.siga.ex.ExMovimentacao;
 import br.gov.jfrj.siga.ex.ExTipoFormaDoc;
+import br.gov.jfrj.siga.ex.ItemDeProtocolo;
 import br.gov.jfrj.siga.ex.relatorio.dinamico.relatorios.RelClassificacao;
 import br.gov.jfrj.siga.ex.relatorio.dinamico.relatorios.RelConsultaDocEntreDatas;
 import br.gov.jfrj.siga.ex.relatorio.dinamico.relatorios.RelDocSubordinadosCriados;
@@ -85,12 +87,15 @@ import br.gov.jfrj.siga.ex.relatorio.dinamico.relatorios.RelVolumeTramitacaoPorM
 import br.gov.jfrj.siga.ex.relatorio.dinamico.relatorios.RelatorioDocumentosSubordinados;
 import br.gov.jfrj.siga.ex.relatorio.dinamico.relatorios.RelatorioModelos;
 import br.gov.jfrj.siga.ex.util.MascaraUtil;
+import br.gov.jfrj.siga.ex.vo.EtiquetaProtocoloVO;
+import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanArrayDataSource;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
@@ -297,12 +302,80 @@ public class ExRelatorioController extends ExController {
 
 	private Map<Integer, String> getListaTipoRel() {
 		final Map<Integer, String> listaTipoRel = new HashMap<Integer, String>();
-		listaTipoRel.put(1, "Documentos Ativos");
+		listaTipoRel.put(1, "Documentos Ativos - Todas situações");
 		listaTipoRel.put(2, "Como Gestor");
 		listaTipoRel.put(3, "Como Interessado");
+		listaTipoRel.put(4, "Documentos Ativos - Aguardando andamento");
 		return listaTipoRel;
 	}
 
+
+	//TJPA
+	@Post("/app/expediente/mov/protocolo_anexo_externo")
+	@Get("/app/expediente/mov/protocolo_anexo_externo")
+	@SuppressWarnings({ "unchecked", "rawtypes", "unused" })
+	public Download aGerarProtocoloAnexoExterno(String sigla, boolean popup,
+			boolean isTransf) throws Exception {
+		
+		ExMovimentacao mov = null;
+
+		final List<ItemDeProtocolo> al = new ArrayList<ItemDeProtocolo>();
+		
+		final DpPessoa pes;
+		final DpPessoa oExemplo = new DpPessoa();
+
+		if (sigla == null || sigla.trim() == "") {
+			throw new AplicacaoException(
+					"A sigla informada é nula ou inválida.");
+		}
+
+		oExemplo.setSigla(sigla);
+		pes = CpDao.getInstance().consultarPorSigla(oExemplo);
+
+		if (pes == null) {
+			throw new AplicacaoException(
+					"Não foi localizada pessoa com a sigla informada.");
+		}
+
+		List<EtiquetaProtocoloVO> dadosProtocolo = new ArrayList<EtiquetaProtocoloVO>();
+		EtiquetaProtocoloVO  etiqueta = new EtiquetaProtocoloVO();
+	
+		Date dt = paramDate("dt");
+		final List<ExMovimentacao> movs = dao().consultarMovimentacoes(pes, dt);
+		
+		for (ExMovimentacao m : movs) {
+			if (mov == null)
+				mov = m;
+			if (mov.getExDocumento().getOrgaoExterno() != null) { 
+		 		etiqueta.setOrigem(mov.getExDocumento().getOrgaoExterno().getNmOrgao()); 
+			} else if (mov.getExDocumento().getObsOrgao() != null) { 
+					  etiqueta.setOrigem(mov.getExDocumento().getObsOrgao()); 
+				   } else { 
+					  etiqueta.setOrigem(null); 
+				   }
+				  
+			etiqueta.setNumeroOriginal(mov.getExDocumento().getNumExtDoc());
+			etiqueta.setDataOriginal(mov.getExDocumento().getDtDocDDMMYYYY());
+			etiqueta.setSubscritorOriginal(mov.getExDocumento().getNmSubscritorExt()); 
+			etiqueta.setNumeroProtocolo(mov.getExDocumento().getSigla()); 
+			etiqueta.setDataProtocolo(mov.getExDocumento().getDtRegDocDDMMYYHHMMSS());
+				
+			dadosProtocolo.add(etiqueta);
+		}	
+
+		if (dadosProtocolo == null && dadosProtocolo.size() == 0) {
+			throw new AplicacaoException(
+					"Não foi localizado protocolo com a sigla informada.");
+		}
+		
+		final InputStream inputStream = aGeraEtiqueta(dadosProtocolo, "relProtocoloExterno.jrxml");
+
+		return new InputStreamDownload(inputStream, APPLICATION_PDF, "relProtocoloExterno");
+ 	}
+	
+	
+	
+	
 	@Get("app/expediente/rel/emiteRelFormularios")
 	public Download aRelFormularios(final String secaoUsuario,
 			final String orgaoUsuario, final String lotacaoTitular,
@@ -390,6 +463,16 @@ public class ExRelatorioController extends ExController {
 				JasperExportManager.exportReportToPdf(relGerado));
 	}
 
+	private InputStream aGeraEtiqueta(final List dadosEtiqueta, final String nomeRelatorio) throws JRException {
+		final String cam = (String) getContext().getRealPath("/WEB-INF/page/exRelatorio/");
+		final JasperDesign design = JRXmlLoader.load(cam + "/" + nomeRelatorio);
+		final JasperReport jr = JasperCompileManager.compileReport(design);
+		final JRDataSource jrds = new JRBeanArrayDataSource(dadosEtiqueta.toArray());
+		final JasperPrint relGerado = JasperFillManager.fillReport(jr, null, jrds);
+		return new ByteArrayInputStream(JasperExportManager.exportReportToPdf(relGerado));
+	}
+	
+	
 	@Get("app/expediente/rel/emiteRelModelos")
 	public Download aRelModelos() throws Exception {
 		final RelatorioModelos rm = new RelatorioModelos(null);
@@ -1370,7 +1453,7 @@ public class ExRelatorioController extends ExController {
 
 		assertAcesso(ACESSO_TRAMESP);
 		final Map<String, String> parametros = new HashMap<String, String>();
-		Long orgaoUsu = getLotaTitular().getOrgaoUsuario().getIdOrgaoUsu();
+		Long orgaoUsu =   getLotaTitular().getOrgaoUsuario().getIdOrgaoUsu();
 		Long orgaoSelId = getIdOrgaoSel(lotacaoSel, usuarioSel, orgaoUsu);
 
 		if (orgaoUsu != orgaoSelId) {
@@ -1379,8 +1462,13 @@ public class ExRelatorioController extends ExController {
 		}
 		consistePeriodo(dataInicial, dataFinal);
 			
-		parametros.put("orgaoUsuario", getLotaTitular().getOrgaoUsuario()
-				.getNmOrgaoUsu());
+		//parametros.put("orgaoUsuario", getLotaTitular().getOrgaoUsuario()
+		//		.getNmOrgaoUsu());
+		//parametros.put("orgaoUsuario", getLotaTitular().getOrgaoUsuario().getId().toString());
+		//parametros.put("lotacaoTitular",getLotaTitular().getSiglaLotacao());
+		parametros.put("idTit", getTitular().getId().toString());
+		parametros.put("orgaoUsuario", lotacaoSel.getObjeto().getOrgaoUsuario().getId().toString());
+		parametros.put("lotacaoTitular", lotacaoSel.getObjeto().getSiglaLotacao());
 		parametros.put("descrEspecie", descrFormaDoc);
 
 		parametros.put("orgao", orgaoSelId.toString());
@@ -1407,6 +1495,8 @@ public class ExRelatorioController extends ExController {
 				parametros);
 		rel.setTemplateFile("RelatorioBaseTempoTramitacaoPorEspecie.jrxml");
 		rel.gerar();
+
+		parametros.put("orgaoUsuario", getLotaTitular().getOrgaoUsuario().getNmOrgaoUsu());
 		parametros.put("totalDocumentos", rel.totalDocumentos.toString());
 		if (getRequest().getParameter("lotacaoSel.descricao") != "" )
 			parametros.put("lotacaoRel",
@@ -1433,9 +1523,9 @@ public class ExRelatorioController extends ExController {
 			final Map<String, String> parametros = new HashMap<String, String>();
 			Long orgaoUsu = getLotaTitular().getOrgaoUsuario().getIdOrgaoUsu();
 			Long orgaoSelId = getIdOrgaoSel(lotacaoSel, usuarioSel, orgaoUsu);
-
-			parametros.put("lotacaoTitular",getLotaTitular().getSiglaLotacao());
+			parametros.put("lotacaoTitular",lotacaoSel.getObjeto().getSiglaLotacao());
 			parametros.put("idTit", getTitular().getId().toString());
+			parametros.put("orgaoUsuario", orgaoUsu.toString());
 
 			if (!primeiraVez) {
 				if (orgaoUsu != orgaoSelId) {
@@ -1514,10 +1604,14 @@ public class ExRelatorioController extends ExController {
 			
 			parametros.put("orgao", String.valueOf(orgaoUsu));
 
-			parametros.put("lotacaoTitular",
-					getLotaTitular().getSiglaLotacao());
+			//parametros.put("lotacaoTitular",
+			//		getLotaTitular().getSiglaLotacao());
 			parametros.put("idTit", getTitular().getId().toString());
 
+			parametros.put("orgaoUsuario", lotacaoSel.getObjeto().getOrgaoUsuario().getId().toString());
+			parametros.put("lotacaoTitular", lotacaoSel.getObjeto().getSiglaLotacao());
+			
+			
 			if (!primeiraVez) {
 				if (orgaoUsu != orgaoSelId) {
 					throw new AplicacaoException(

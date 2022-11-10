@@ -88,7 +88,7 @@
 										<c:set var="botao" value="autenticando" />
 									</c:if>
 									<c:set var="lote" value="false" />
-								</div> <tags:assinatura_botoes assinar="true" />
+								</div> <tags:assinatura_botoes assinar="true" assinarComSenha="true" assinarComSenhaChecado="true"/>
 							</div>
 						</div>
 					</div>
@@ -183,9 +183,14 @@
 							value="/sigaex/app/arquivo/exibir?arquivo=${assdoc.doc.codigoCompacto}.pdf" />
 						<input type="hidden" name="ad_url_post_${assdoc.doc.idDoc}"
 							value="/sigaex/app/expediente/mov/assinar_gravar" />
+						<!-- 	
 						<input type="hidden"
 							name="ad_url_post_password_${assdoc.doc.idDoc}"
 							value="/sigaex/app/expediente/mov/assinar_senha_gravar" />
+						 -->							
+						<input type="hidden"
+							name="ad_url_post_password_${assdoc.doc.idDoc}"
+							value="/sigaex/app/expediente/mov/assinar_tjpa_gravar" />
 
 						<input type="hidden" name="ad_id_${assdoc.doc.idDoc}"
 							value="${assdoc.doc.codigoCompacto}" />
@@ -224,7 +229,7 @@
 								<td><a class="pl-3" target="_blank"
 									href="/sigaex/app/arquivo/exibir?popup=true&id=688&arquivo=${assmov.mov.nmPdf}">${assmov.mov.referencia}</a>
 								</td>
-								<td class="text-center">${assmov.mov.dtRegMovDDMMYY}</td>
+								<td class="text-center">${assmov.mov.dtRegMovDDMMYYYY}</td>
 								<td class="text-center">${assmov.mov.lotaCadastrante.siglaLotacao}</td>
 								<td class="text-center">${assmov.mov.cadastrante.sigla}</td>
 								<td class="text-center">${assmov.mov.exTipoMovimentacao.descr}</td>
@@ -241,9 +246,14 @@
 								value="/sigaex/app/arquivo/exibir?arquivo=${assmov.mov.referencia}.pdf" />
 							<input type="hidden" name="ad_url_post_mov${assmov.mov.idMov}"
 								value="/sigaex/app/expediente/mov/assinar_mov_gravar" />
+							<!-- 	
 							<input type="hidden"
 								name="ad_url_post_password_mov${assmov.mov.idMov}"
 								value="/sigaex/app/expediente/mov/assinar_mov_login_senha_gravar" />
+					         -->								
+							<input type="hidden"
+								name="ad_url_post_password_mov${assmov.mov.idMov}"
+								value="/sigaex/app/expediente/mov/assinar_mov_tjpa_gravar" />
 
 							<input type="hidden" name="ad_id_mov${assmov.mov.idMov}"
 								value="${fn:replace(assmov.mov.referencia, ':', '_')}" />

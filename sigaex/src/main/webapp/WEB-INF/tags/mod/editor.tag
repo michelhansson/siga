@@ -60,7 +60,7 @@
 					 	<script type="text/javascript">
 
 								CKEDITOR.config.disableNativeSpellChecker = false;
-								CKEDITOR.config.scayt_autoStartup = false;
+								CKEDITOR.config.scayt_autoStartup = true;
 								CKEDITOR.config.scayt_sLang = 'pt_BR';
 								CKEDITOR.config.stylesSet = 'siga_ckeditor_styles';
 								
@@ -108,24 +108,24 @@
 								    },
 								    {
 								        name: 'clipboard',
-								        items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo']
+								        items: ['Cut', 'Copy', 'Paste', 'PasteText', '-', 'Undo', 'Redo' ]
 								    },
 								    {
 								        name: 'editing',
-								        items: ['Find', 'Replace', '-', 'SelectAll']
+								        items: ['Find', 'Replace', '-', 'SelectAll', '-', 'Scayt' ]
 								    },
 								    '/',
 								    {
 								        name: 'basicstyles',
-								        items: ['Bold', 'Italic', 'Subscript', 'Underline', 'Strike', '-', 'RemoveFormat']
+								        items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'CopyFormatting', 'RemoveFormat' ]
 								    },
 								    {
 								        name: 'paragraph',
-								        items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyBlock', 'JustifyRight']
+								        items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock' ]
 								    },
 								    {
 								        name: 'insert',
-								        items: ['Table' , 'Footnotes', '-', 'SpecialChar', '-', 'PageBreak']
+								        items: ['Table' , 'Footnotes', '-', 'SpecialChar', '-', 'PageBreak' ]
 								    },
 								    {
 								        name: 'document',

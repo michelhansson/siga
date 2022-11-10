@@ -11,6 +11,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONException;
 
 import com.auth0.jwt.JWTSigner;
@@ -31,6 +32,7 @@ import br.com.caelum.vraptor.observer.download.InputStreamDownload;
 import br.gov.jfrj.itextpdf.Documento;
 import br.gov.jfrj.siga.base.AplicacaoException;
 import br.gov.jfrj.siga.base.Prop;
+import br.gov.jfrj.siga.base.util.GoogleRecaptcha;
 import br.gov.jfrj.siga.dp.DpLotacao;
 import br.gov.jfrj.siga.dp.DpPessoa;
 import br.gov.jfrj.siga.ex.ExArquivo;
@@ -78,6 +80,7 @@ public class ExProcessoConsultaPublicaController extends ExController {
 			final String certificadoB64, final String atributoAssinavelDataHora) throws Exception {
 	
 		String recaptchaSiteKey = getRecaptchaSiteKey();
+		result.include("siglasPermitidas", Prop.get("consultapublica.siglas.sem.excecao"));
 		result.include("recaptchaSiteKey", recaptchaSiteKey);
 		result.include("n", n);
 
@@ -108,7 +111,7 @@ public class ExProcessoConsultaPublicaController extends ExController {
 
 		final ExDocumentoDTO exDocumentoDTO = consultarDocumento(n);
 		
-		verificarSePodeApresentarDocumento(exDocumentoDTO);
+		verificarSePodeApresentarDocumento(exDocumentoDTO, n);
 		
 		ExDocumento doc = exDocumentoDTO.getDoc();
 
@@ -132,7 +135,7 @@ public class ExProcessoConsultaPublicaController extends ExController {
 		final ExDocumentoVO docVO = new ExDocumentoVO(doc, mob, getCadastrante(), p, l, true, true, false);
 		
 		docVO.exibe();
-
+		
 		result.include("movs", lista);
 		result.include("sigla", exDocumentoDTO.getDoc().getSigla());
 		result.include("msg", exDocumentoDTO.getMsg());
@@ -295,7 +298,7 @@ public class ExProcessoConsultaPublicaController extends ExController {
 		
 		final ExDocumentoDTO exDocumentoDTO = consultarDocumento(sigla);
 		
-		verificarSePodeApresentarDocumento(exDocumentoDTO);
+		verificarSePodeApresentarDocumento(exDocumentoDTO, sigla);
 		
 		ExArquivo arq = exDocumentoDTO.getDoc();
 		
@@ -319,18 +322,23 @@ public class ExProcessoConsultaPublicaController extends ExController {
 		return new InputStreamDownload(makeByteArrayInputStream(bytes, fB64),	contentType, fileName);
 	}
 
-	private void verificarSePodeApresentarDocumento(final ExDocumentoDTO exDocumentoDTO) {
+	private void verificarSePodeApresentarDocumento(final ExDocumentoDTO exDocumentoDTO, final String sigla) {
 		
 		if (exDocumentoDTO.getDoc() == null || exDocumentoDTO.getDoc().isPendenteDeAssinatura()) {
 			
-			throw new AplicacaoException("Documento não encontrado.");
+			throw new AplicacaoException("Documento: (" + sigla + ") não encontrado.");
 		}
-
+		if ( !StringUtils.containsIgnoreCase(Prop.get("consultapublica.siglas.sem.excecao"), exDocumentoDTO.getDoc().getExFormaDocumento().getSigla().toUpperCase()) ) {
+			throw new AplicacaoException(
+					"Sigla: <b>" + exDocumentoDTO.getDoc().getExFormaDocumento().getSigla().toUpperCase() + "</b> inválida para consulta de Processos Públicos.");
+		}
+		
 		// consultapublica.maxNivelacesso.tramitacao
 		if (Integer.parseInt(exDocumentoDTO.getDoc().getNivelAcesso()) > Prop.getInt("consultapublica.exibe.tramitacao.ate.nivelacesso")) {
 
 			throw new AplicacaoException("O documento possui um nível de sigilo que impede a visualização de sua tramitação.");
 		}
+
 	}
 	
 	private ByteArrayInputStream makeByteArrayInputStream(final byte[] content,	final boolean fB64) {

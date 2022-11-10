@@ -153,6 +153,17 @@ public class ExArquivoController extends ExController {
 				cacheControl = "public";
 			}
 			byte ab[] = null;
+
+			String usuarioGerador =  ExDao.getInstance().usuarioEmissorDocumento(this.getSo().getCadastrante());
+
+			if (usuarioGerador != null || !"".equals(usuarioGerador)) {
+				final Date dt = ExDao.getInstance().consultarDataEHoraDoServidor();
+				if (!mob.getSigla().contains("TMP")) {
+					ExDao.getInstance().salvarAcessoDocumento(this.so.getCadastrante(), this.so.getIdentidadeCadastrante(), this.so.getIpAdress(), usuarioGerador, mob.getSigla(), "aux", dt, mob.doc());
+				}	
+			}
+			
+			
 			if (isArquivoAuxiliar) {
 				ab = mov.getConteudoBlobMov2();
 				return new InputStreamDownload(makeByteArrayInputStream(ab, fB64), APPLICATION_OCTET_STREAM,
@@ -172,7 +183,7 @@ public class ExArquivoController extends ExController {
 				String filename = isPdf ? (volumes ? mob.doc().getReferenciaPDF() : mob.getReferenciaPDF())
 						: (volumes ? mob.doc().getReferenciaHtml() : mob.getReferenciaHtml());
 				DocumentosSiglaArquivoGet.iniciarGeracaoDePdf(req, resp, ContextoPersistencia.getUserPrincipal(),
-						filename, contextpath, servernameport);
+						filename, contextpath, servernameport, usuarioGerador);
 				result.redirectTo("/app/arquivo/status/" + mob.getCodigoCompacto() + "/" + resp.uuid + "/"
 						+ resp.jwt + "/" + filename);
 				return null;
@@ -183,7 +194,7 @@ public class ExArquivoController extends ExController {
 					ab = mov.getConteudoBlobpdf();
 				} else {
 					ByteArrayOutputStream baos = new ByteArrayOutputStream();
-					Documento.getDocumento(baos, null, mob, mov, completo, estampar, volumes, hash, null);
+					Documento.getDocumento(baos, null, mob, mov, completo, estampar, volumes, hash, null, usuarioGerador);
 					ab = baos.toByteArray();
 				}
 				if (ab == null) {
@@ -219,7 +230,7 @@ public class ExArquivoController extends ExController {
 			}
 			if (isHtml) {
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				Documento.getDocumentoHTML(baos, null, mob, mov, completo, volumes, contextpath, servernameport);
+				Documento.getDocumentoHTML(baos, null, mob, mov, completo, volumes, contextpath, servernameport, usuarioGerador);
 				ab = baos.toByteArray();
 				if (ab == null) {
 					throw new AplicacaoException("HTML inválido!");
@@ -322,9 +333,11 @@ public class ExArquivoController extends ExController {
 			
 			byte ab[] = null;
 	
+			String usuarioGerador = ExDao.getInstance().usuarioEmissorDocumento(this.getSo().getCadastrante());
+			
 			if (isPdf) {
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				Documento.getDocumento(baos, null, mob, null, completo, semmarcas, volumes, null, null);
+				Documento.getDocumento(baos, null, mob, null, completo, semmarcas, volumes, null, null, usuarioGerador);
 				ab = baos.toByteArray();
 				
 				if (ab == null) {
@@ -513,8 +526,11 @@ public class ExArquivoController extends ExController {
 			throw new AplicacaoException("Erro ao verificar token JWT", 0, e);
 		}
 	}
-	
-	
+
+
+	protected SigaObjects getSo() {
+		return so;
+	}
 	
 	
 	

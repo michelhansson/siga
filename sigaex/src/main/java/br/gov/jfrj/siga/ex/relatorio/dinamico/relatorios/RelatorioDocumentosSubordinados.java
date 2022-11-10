@@ -149,11 +149,13 @@ public class RelatorioDocumentosSubordinados extends RelatorioTemplate {
 						"else ('-' || chr(marca.exMobil.numSequencia+64)) end)";*/
 
 		// Monta query definitiva
-		String listaMarcadoresRelevantes = "2, 3, 5, 7, 14, 15"; // Ativos
+		String listaMarcadoresRelevantes = "2, 3, 5, 7, 14, 15"; // Ativos - todos
 		if (parametros.get("tipoRel").equals("2")) {
 			listaMarcadoresRelevantes = "27"; // Como gestor
 		} else if (parametros.get("tipoRel").equals("3")) {
 			listaMarcadoresRelevantes = "28"; // Como interessado
+		} else if (parametros.get("tipoRel").equals("4")) {
+			listaMarcadoresRelevantes = "2"; // Ativos - aguardando andamento
 		}
 		
 		

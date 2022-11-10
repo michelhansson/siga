@@ -39,12 +39,14 @@ import br.gov.jfrj.siga.base.SigaMessages;
 import br.gov.jfrj.siga.cp.AbstractCpAcesso;
 import br.gov.jfrj.siga.cp.CpIdentidade;
 import br.gov.jfrj.siga.cp.bl.Cp;
+import br.gov.jfrj.siga.dp.DpPessoa;
 import br.gov.jfrj.siga.dp.dao.CpDao;
 import br.gov.jfrj.siga.gi.integracao.IntegracaoLdapViaWebService;
 import br.gov.jfrj.siga.gi.service.GiService;
 import br.gov.jfrj.siga.idp.jwt.AuthJwtFormFilter;
 import br.gov.jfrj.siga.idp.jwt.SigaJwtBL;
 import br.gov.sp.prodesp.siga.servlet.CallBackServlet;
+import br.jus.tjpa.siga.service.UsuarioService;
 
 @Controller
 public class LoginController extends SigaController {
@@ -96,7 +98,42 @@ public class LoginController extends SigaController {
 	@Transacional
 	public void auth(String username, String password, String cont) throws IOException {
 		try {
-			
+			String ip = this.so.getIpAdress();
+
+			try {
+				UsuarioService usuarioService = new UsuarioService();
+				String resultado = usuarioService.validarUsuarioRede(username.toLowerCase(), password, ip, ip);
+				if (!resultado.equalsIgnoreCase("AUTENTICADO")) {
+					throw new RuntimeException("Login de rede ou senha inválida.");
+				}
+			} catch (Exception e) {
+				throw new RuntimeException("Serviço de autenticação com problemas -> " + e.getMessage());
+			}
+			  
+			//username = "everaldo.barroso";
+			//username = "alvaro.neto";
+			//username = "carlos.jatene";
+			//username = "mario.tavares";
+			//username = "diego.leitao";
+			  
+			DpPessoa pessoa = dao().consultarPorEmailLogin(username.toLowerCase()+System.getProperty("servidor.dominio"));
+			if (pessoa == null) {
+				throw new RuntimeException("Este usuário não está cadastrado no sistema. \nEntre em contato com a Secretaria de Gestão de Pessoas e verifique seu e-mail institucional cadastrado.");
+			}
+			  
+			if (pessoa.getDataFim() != null) {
+				throw new RuntimeException("Este usuário não está habilitado para o uso do sistema.");
+			}
+
+			/*
+			 * if (!username.equals(pessoa.getLoginRede())) { throw new
+			 * RuntimeException("Este usuário não confere com login de rede cadastrado no sistema. Verifique o e-mail Institucional ("
+			 * + pessoa.getEmailPessoa() + ")"); }
+			 */
+
+			username = pessoa.getSesbPessoa() + pessoa.getMatricula().toString();
+
+
 			if (loginSenhaVazios(username, password)) {
 				StringBuffer mensagem = new StringBuffer();
 				mensagem.append(SigaMessages.getMessage("usuario.informarlogin"));
@@ -105,7 +142,8 @@ public class LoginController extends SigaController {
 
 			
 			GiService giService = Service.getGiService();
-			String usuarioLogado = giService.login(username, password);
+			//String usuarioLogado = giService.login(username, password);
+			String usuarioLogado = giService.dadosUsuario(username);
 
 			if (Pattern.matches("\\d+", username) && username.length() == 11) {
 				List<CpIdentidade> lista = new CpDao().consultaIdentidadesCadastrante(username, Boolean.TRUE);
@@ -113,6 +151,13 @@ public class LoginController extends SigaController {
 					throw new RuntimeException("Pessoa com mais de um usuário, favor efetuar login com a matrícula!");
 				}*/
 			}
+		        if (usuarioLogado == null || usuarioLogado.trim().length() == 0) {
+		    	    CpIdentidade idNova = null;	
+				    idNova = Cp.getInstance().getBL().criarIdentidadeViaLogin(username, pessoa.getCpfFormatado(), null,
+				 		    "Tribunal@" + pessoa.getCpfFormatado().substring(10, 14).replace("-",""), null, false);			    			 
+			        usuarioLogado = giService.dadosUsuario(username); 
+		        }
+
 			if (usuarioLogado == null || usuarioLogado.trim().length() == 0) {
 				StringBuffer mensagem = new StringBuffer();
 				mensagem.append(SigaMessages.getMessage("usuario.falhaautenticacao"));

@@ -78,6 +78,9 @@ public class DpPessoa extends AbstractDpPessoa implements Serializable,
 	@Transient
 	private List <List<String>> listaLotacoes = new ArrayList <List<String>>();
 
+	@Transient
+	private String loginRede;
+
 	public DpPessoa() {
 
 	}
@@ -156,6 +159,12 @@ public class DpPessoa extends AbstractDpPessoa implements Serializable,
 				+ getMatricula().toString() : "";
 	}
 
+	public String getLoginRede() {
+		int pos = getEmailPessoa().indexOf("@");
+
+		return pos > 0 ? getEmailPessoa().substring(0, pos) : "";
+	}
+	
 	public String getIniciais() {
 		// return iniciais(getNomePessoa());
 		return getSigla();
@@ -667,8 +676,43 @@ public class DpPessoa extends AbstractDpPessoa implements Serializable,
         return "";
     }
 
+    public String getDataExercicioPessoaDDMMYYYY() {
+        if (getDataExercicioPessoa() != null) {
+                final SimpleDateFormat df = new SimpleDateFormat(
+                                "dd/MM/yyyy");
+                return df.format(getDataExercicioPessoa());
+        }
+        return "";
+    }
 
-	public int compareTo(Object o) {
+    public String getDataInicioPessoaDDMMYYYY() {
+        if (getDataInicioPessoa() != null) {
+                final SimpleDateFormat df = new SimpleDateFormat(
+                                "dd/MM/yyyy");
+                return df.format(getDataInicioPessoa());
+        }
+        return "";
+    }
+
+    public String getDataPosseDDMMYYYY() {
+        if (getDataPosse() != null) {
+                final SimpleDateFormat df = new SimpleDateFormat(
+                                "dd/MM/yyyy");
+                return df.format(getDataPosse());
+        }
+        return "";
+    }
+
+    public String getDataNomeacaoDDMMYYYY() {
+        if (getDataNomeacao() != null) {
+                final SimpleDateFormat df = new SimpleDateFormat(
+                                "dd/MM/yyyy");
+                return df.format(getDataNomeacao());
+        }
+        return "";
+    }
+
+    public int compareTo(Object o) {
 		DpPessoa other = (DpPessoa) o;
 
 		return getNomePessoa().compareTo(other.getNomePessoa());

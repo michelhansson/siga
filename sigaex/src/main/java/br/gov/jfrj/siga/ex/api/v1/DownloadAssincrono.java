@@ -24,9 +24,10 @@ public class DownloadAssincrono implements Callable<String> {
 	private String contextpath;
 	String servernameport;
 	private boolean exibirReordenacao;
+	private String usuarioGerador;
 
 	public DownloadAssincrono(String uuid, String contenttype, String sigla, boolean estampar, boolean volumes,
-			String contextpath, String servernameport, boolean exibirReordenacao) {
+			String contextpath, String servernameport, boolean exibirReordenacao, String usuarioGerador) {
 		super();
 		this.uuid = uuid;
 		this.contenttype = contenttype;
@@ -36,6 +37,7 @@ public class DownloadAssincrono implements Callable<String> {
 		this.contextpath = contextpath;
 		this.servernameport = servernameport;
 		this.exibirReordenacao = exibirReordenacao;
+		this.usuarioGerador = usuarioGerador;
 	}
 
 	@Override
@@ -55,13 +57,13 @@ public class DownloadAssincrono implements Callable<String> {
 
 			// Cria um documento em diretório temporário para agregar os
 			// diversos PDFs
+			
 			bufName = getBufName(uuid, contenttype, sigla);
 			FileOutputStream buf = new FileOutputStream(bufName);
 			if ("text/html".equals(this.contenttype))
-				Documento.getDocumentoHTML(buf, this.uuid, mob, null, true, volumes, this.contextpath,
-						this.servernameport);
+				Documento.getDocumentoHTML(buf, this.uuid, mob, null, true, volumes, this.contextpath,	this.servernameport, this.usuarioGerador);
 			else
-				Documento.getDocumento(buf, this.uuid, mob, null, true, estampar, volumes, null, null);
+				Documento.getDocumento(buf, this.uuid, mob, null, true, estampar, volumes, null, null, usuarioGerador == null ? "" : usuarioGerador);
 		} catch (Exception ex) {
 			SwaggerUtils.log(DownloadAssincrono.class).error(RequestExceptionLogger.simplificarStackTrace(ex));
 		}

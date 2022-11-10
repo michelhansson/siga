@@ -277,7 +277,20 @@ public class ExMobilController extends
 
 	}
 	
+	//Ajuste TJPA - Pedido do Sr. Mario Tavares - 13/06/2022 12:13
 	private List<ExTipoDocumento> getTiposDocumentoParaConsulta() {
+		List<ExTipoDocumento> l = dao().listarExTiposDocumento();
+		List<ExTipoDocumento> l2 = new ArrayList<>();
+		for (ExTipoDocumento i : l) {
+			if (i.getId() == ExTipoDocumento.TIPO_DOCUMENTO_INTERNO_FOLHA_DE_ROSTO)
+				continue;
+			l2.add(i);
+		}
+		l = l2;
+		return l;
+	}
+	// 
+	private List<ExTipoDocumento> getTiposDocumentoParaConsultaOLD() {
 		List<ExTipoDocumento> l = dao().listarExTiposDocumento();
 		if ("inativa".equals(Prop.get("folha.de.rosto"))) {
 			List<ExTipoDocumento> l2 = new ArrayList<>();
@@ -290,7 +303,7 @@ public class ExMobilController extends
 		}
 		return l;
 	}
-	
+
 	@Post
 	@Path("app/expediente/doc/exportarCsv")
 	public Download exportarCsv(final String popup, final String primeiraVez, final String propriedade, final Integer postback, final int apenasRefresh,

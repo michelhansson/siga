@@ -139,9 +139,14 @@ public class DpPessoaController extends SigaSelecionavelControllerSupport<DpPess
 		}
 		this.getP().setOffset(paramoffset);
 
-		if (sigla == null) {
-			sigla = "";
+		//TJPA - 22/08/2022 11:02 *Michel Hansson
+		if (sigla == null || "".equals(sigla)) {
+			sigla = so.getCadastrante().getNomePessoa();
 		}
+
+		//if (sigla == null) {
+		//	sigla = "";
+		//}
 		
 		try {
 		super.aBuscar(sigla, postback);

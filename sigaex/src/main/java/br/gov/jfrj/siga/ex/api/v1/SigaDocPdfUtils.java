@@ -107,7 +107,7 @@ public class SigaDocPdfUtils {
 					ab = mov.getConteudoBlobpdf();
 				} else {
 					ByteArrayOutputStream baos = new ByteArrayOutputStream();
-					Documento.getDocumento(baos, null, mob, null, completo, semmarcas, false, null, null);
+					Documento.getDocumento(baos, null, mob, null, completo, semmarcas, false, null, null, null);
 					ab = baos.toByteArray();
 				}
 				if (ab == null) {
@@ -146,7 +146,7 @@ public class SigaDocPdfUtils {
 			}
 			if (isHtml) {
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				Documento.getDocumentoHTML(baos, null, mob, mov, completo, false, contextpath, servernameport);
+				Documento.getDocumentoHTML(baos, null, mob, mov, completo, false, contextpath, servernameport, null);
 				ab = baos.toByteArray();
 
 				if (ab == null) {

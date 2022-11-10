@@ -219,7 +219,7 @@ public class ExApiV1Servlet extends SwaggerServlet implements IPropertyProvider 
 		addPublicProperty("modelo.interno.importado", null);
 		addPublicProperty("modelo.processo.administrativo", null);
 		addPublicProperty("montador.query", "br.gov.jfrj.siga.hibernate.ext.MontadorQuery");
-		addPublicProperty("pdf.tamanho.maximo", "5000000");
+		addPublicProperty("pdf.tamanho.maximo", "21000000");
 		addPublicProperty("pdf.tamanho.maximo.completo", null);
 		addPublicProperty("relarmaz.qtd.bytes.pagina", "51200");
 		addPublicProperty("reordenacao.ativo", null);
@@ -229,6 +229,7 @@ public class ExApiV1Servlet extends SwaggerServlet implements IPropertyProvider 
 		addPrivateProperty("webdav.senha", null);
 		addPublicProperty("controlar.numeracao.expediente", "false");
 		addPublicProperty("recebimento.automatico", "true");
+		addPublicProperty("questiona.recebimento", "true");
 		addPublicProperty("descricao.documento.ai.length", "4000");
 
 		addPublicProperty("exibe.nome.acesso", "false");
@@ -248,11 +249,20 @@ public class ExApiV1Servlet extends SwaggerServlet implements IPropertyProvider 
 		addPublicProperty("smtp.sugestao.assunto", "Siga-Le: Sugestão");
 		
 		// anexação de pdf: quantidade de arq. a serem anexados por upload
-		addPublicProperty("qtd.max.arquivo.anexado.upload", "1");
+		addPublicProperty("qtd.max.arquivo.anexado.upload", "5");
 		
 		addPublicProperty("consultapublica.exibe.tramitacao.ate.nivelacesso", "-1");
+		// separados por virgulas. EX: addPublicProperty("consultapublica.siglas.sem.excecao", "EXT,MEM,DES");
+		addPublicProperty("consultapublica.siglas.sem.excecao", "EXT");
+
+		// separados por virgulas. EX: addPublicProperty("marcador.ignorados.quadro.quantitativo", "7,8,9,10");
+		addPublicProperty("marcador.ignorados.quadro.quantitativo", null);
 		
 		addPrivateProperty("debug.default.template.pathname", null);
+
+		//GC Control - Concatenação de PDF
+		addPublicProperty("arquivo.tamanho.gc", "26214400"); //PDF - 25MB
+		addPublicProperty("arquivo.contagem.gc", "25"); //HTML - 25 documentos
 		
 		//Informações Siafem
 		addPublicProperty("ws.siafem.nome.modelo", null);
@@ -261,7 +271,8 @@ public class ExApiV1Servlet extends SwaggerServlet implements IPropertyProvider 
 		addPublicProperty("ws.siafem.service.localpart", null);
 		addPublicProperty("ws.siafem.service.localpartsoap", null);
 		
-		addPublicProperty("documento.novo.modelo.padrao", "Memorando");
+		addPublicProperty("documento.novo.modelo.padrao", "Memorando (Modelo Padrão)");
+		addPublicProperty("selo.cnj", "true");
 	}
 
 	@Override
